@@ -8,3 +8,4 @@ project ("OpenGLDemo")
 
 # 包含子项目。
 add_subdirectory ("OpenGLDemo")
+add_subdirectory ("GL")

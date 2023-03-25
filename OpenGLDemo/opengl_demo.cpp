@@ -1,6 +1,10 @@
-﻿#include "OpenGLDemo.h"
+﻿#include <string.h>
+#include <stdlib.h>
+#include <iostream>
+
 #include "glad/glad.h"
 #include "glfw/glfw3.h"
+#include "GL/gl.h"
 
 using namespace std;
 
@@ -24,6 +28,11 @@ int main()
 
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
+	char* shaderStr = (char*)"hello OpenGL!";
+
+	//GLShader* shader = new GLShader(shaderStr, GLShaderType::GL_SHADER_VERTEX);
+	GLProgram* program = new GLProgram(shaderStr, shaderStr);
+
 	while (!glfwWindowShouldClose(window)) {
 		//TODO 绘制操作
 
@@ -31,6 +40,9 @@ int main()
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	//delete shader;
+	delete program;
 
 	glfwTerminate();
 	return 0;
