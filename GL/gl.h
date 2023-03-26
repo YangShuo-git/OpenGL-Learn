@@ -41,10 +41,19 @@ public:
 	~GLVAO();
 
 	int addVertx3D(float* data, int vertexCount, int layout);
+
+	int setIndex(unsigned int* indexData, int indexCount);
+
 	int bindVAO();
+
+	int draw();
 
 private:
 	GLuint vao = 0;
+	GLuint ebo = 0;
+
+	int drawTime = 0;
+
 	std::vector<GLuint> vboList;
 };
 

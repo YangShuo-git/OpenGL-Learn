@@ -14,6 +14,12 @@ GLVAO::~GLVAO()
 	}
 	vboList.clear();
 
+	if (ebo != 0)
+	{
+		glDeleteBuffers(1, &ebo);
+		ebo = 0;
+	}
+
 	if (vao != NULL)
 	{
 		glDeleteVertexArrays(1, &vao);
@@ -27,8 +33,8 @@ int GLVAO::addVertx3D(float* data, int vertexCount, int layout)
 	GLuint vbo = 0;
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
 	glBufferData(GL_ARRAY_BUFFER, vertexCount*3*sizeof(float), data, GL_STATIC_DRAW);
+
 	glVertexAttribPointer(layout, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (GLvoid*)0);
 	glEnableVertexAttribArray(layout);
 	vboList.push_back(vbo);
@@ -41,5 +47,29 @@ int GLVAO::addVertx3D(float* data, int vertexCount, int layout)
 int GLVAO::bindVAO()
 {
 	glBindVertexArray(vao);
+	return 0;
+}
+
+int GLVAO::setIndex(unsigned int* indexData, int indexCount)
+{
+	glBindVertexArray(vao);
+
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(unsigned int), indexData, GL_STATIC_DRAW);
+
+	glBindVertexArray(0);
+
+	drawTime = indexCount;
+
+	return 0;
+}
+
+int GLVAO::draw()
+{
+	bindVAO();
+
+	glDrawElements(GL_TRIANGLES, drawTime, GL_UNSIGNED_INT, 0);
+
 	return 0;
 }
