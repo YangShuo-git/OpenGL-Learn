@@ -11,4 +11,4 @@ add_library(
 	"gl.h"
 	"gl_program.cpp"
 	"gl_shader.cpp"
-)
+ "gl_vao.cpp")

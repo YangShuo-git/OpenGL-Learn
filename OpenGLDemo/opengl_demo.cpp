@@ -54,7 +54,17 @@ int main()
 		{
 			rgbaColor = vec4(outPos, 1.0);
 		}
-		);
+	);
+
+	float vertex[] =
+	{
+		0.0f,  1.0f,  0.0f,
+		-1.0f, -1.0f, 0.0f,
+		1.0f,  -1.0f, 0.0f,
+	};
+
+	GLVAO* vao = new GLVAO();
+	vao->addVertx3D(vertex, 3, 0);
 
 	//printf("vertexShader: %s/n", vertexShader);
 	//GLShader* shader = new GLShader(shaderStr, GLShaderType::GL_SHADER_VERTEX);
@@ -62,12 +72,19 @@ int main()
 
 	while (!glfwWindowShouldClose(window)) {
 		//TODO 绘制操作
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		program->useProgram();
+		vao->bindVAO();
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// TODO 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
+	delete vao;
 	//delete shader;
 	delete program;
 

@@ -1,7 +1,9 @@
 #pragma once
 
+#include <vector>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 
 enum GLShaderType
 {
@@ -26,6 +28,23 @@ public:
 	GLProgram(char* vertexShaderStr, char* fragmentShaderSrc);
 	~GLProgram();
 
+	int useProgram();
+
 public:
 	GLuint program = 0;
 };
+
+class GLVAO
+{
+public:
+	GLVAO();
+	~GLVAO();
+
+	int addVertx3D(float* data, int vertexCount, int layout);
+	int bindVAO();
+
+private:
+	GLuint vao = 0;
+	std::vector<GLuint> vboList;
+};
+

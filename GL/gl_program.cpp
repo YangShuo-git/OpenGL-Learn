@@ -36,3 +36,9 @@ GLProgram::~GLProgram()
 		program = 0;
 	}
 }
+
+int GLProgram::useProgram()
+{
+	glUseProgram(program);
+	return 0;
+}
