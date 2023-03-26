@@ -32,13 +32,16 @@ int main()
 	char* vertexShader = SHADER(
 		#version 330\n
 
+		uniform float temp;
+
 		layout(location = 0) in vec3 pos;
 		out vec3 outPos;
 
 		void main()
 		{
 			outPos = pos;
-			gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);
+			float temp2 = sin(temp);
+			gl_Position = vec4(pos.x* temp2, pos.y * temp2, pos.z * temp2, 1.0);
 		}
 	);
 
@@ -86,6 +89,7 @@ int main()
 	//GLShader* shader = new GLShader(shaderStr, GLShaderType::GL_SHADER_VERTEX);
 	GLProgram* program = new GLProgram(vertexShader, fragmentShader);
 
+	float verValue = 0.5;
 	while (!glfwWindowShouldClose(window)) {
 		// 绘制操作
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -94,7 +98,13 @@ int main()
 		//vao->bindVAO();
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 
+		// 将verValue传递给shader中的变量temp
+		GLint local = glGetUniformLocation(program->getProgram(), "temp");
+		glUniform1f(local, verValue);
+
 		vao->draw();
+
+		verValue += 0.001;
 
 		// TODO 
 		glfwSwapBuffers(window);

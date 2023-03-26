@@ -29,6 +29,7 @@ public:
 	~GLProgram();
 
 	int useProgram();
+	GLuint getProgram();
 
 public:
 	GLuint program = 0;

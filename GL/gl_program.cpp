@@ -42,3 +42,8 @@ int GLProgram::useProgram()
 	glUseProgram(program);
 	return 0;
 }
+
+GLuint GLProgram::getProgram()
+{
+	return program;
+}
