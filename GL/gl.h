@@ -31,7 +31,7 @@ public:
 	int useProgram();
 	GLuint getProgram();
 
-public:
+private:
 	GLuint program = 0;
 };
 

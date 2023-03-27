@@ -51,6 +51,8 @@ int main()
 		out vec4 rgbaColor;
 		in vec3 outPos;
 
+		uniform sampler2D texture;
+
 		void main()
 		{
 			rgbaColor = vec4(outPos, 1.0);
@@ -89,19 +91,47 @@ int main()
 	//GLShader* shader = new GLShader(shaderStr, GLShaderType::GL_SHADER_VERTEX);
 	GLProgram* program = new GLProgram(vertexShader, fragmentShader);
 
+	// R G B    R G B    R G B    R G B
+	// 以rgb的格式绘制一个2*2的图片
+	int imgWidth = 2;
+	int imgHeight = 2;
+	unsigned char imgData[] =
+	{
+		255, 0, 0,     0, 255, 0,
+		0, 0, 255,     127,127,127
+	};
+
+	GLuint textureId = 0;
+	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_2D, textureId);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth, imgHeight, 0, GL_RGB, GL_UNPACK_ALIGNMENT, imgData);
+
 	float verValue = 0.5;
 	while (!glfwWindowShouldClose(window)) {
 		// 绘制操作
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		program->useProgram();
-		//vao->bindVAO();
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// 将verValue传递给shader中的变量temp
 		GLint local = glGetUniformLocation(program->getProgram(), "temp");
 		glUniform1f(local, verValue);
 
+		// 纹理单元，只有通过纹理单元，才能传递texture
+		GLint localTexture = glGetUniformLocation(program->getProgram(), "texture");
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureId);
+		glUniform1i(localTexture, 0);
+
+		// 绘制三角形、矩形
 		vao->draw();
 
 		verValue += 0.001;
