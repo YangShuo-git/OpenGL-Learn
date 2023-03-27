@@ -35,12 +35,18 @@ int main()
 		uniform float temp;
 
 		layout(location = 0) in vec3 pos;
-		out vec3 outPos;
+		layout(location = 1) in vec3 posUv;
+
+		out vec3 outPos;    // 输出到fragmentShader中
+		out vec3 outPosUv;
 
 		void main()
 		{
 			outPos = pos;
+			outPosUv = posUv;
+
 			float temp2 = sin(temp);
+			temp2 = 1;
 			gl_Position = vec4(pos.x* temp2, pos.y * temp2, pos.z * temp2, 1.0);
 		}
 	);
@@ -49,13 +55,20 @@ int main()
 		#version 330\n
 
 		out vec4 rgbaColor;
-		in vec3 outPos;
 
-		uniform sampler2D texture;
+		in vec3 outPos;  // 接收从vertexShader传进来的
+		in vec3 outPosUv;
+
+		uniform sampler2D imgTexture;
 
 		void main()
 		{
+			vec2 uv = vec2(outPosUv.x, outPosUv.y);  // 纹理坐标
+			vec4 color = texture(imgTexture, uv);
+
 			rgbaColor = vec4(outPos, 1.0);
+
+			rgbaColor = color;
 		}
 	);
 
@@ -76,6 +89,15 @@ int main()
 		-1.0f, -1.0f, 0.0f,   // 3
 	};
 
+	// 以3为原点的坐标轴
+	float vertexUv[] =
+	{
+		0.0f,  1.0f,  0.0f,  // 0
+		1.0f,  1.0f, 0.0f,   // 1
+		1.0f,  0.0f, 0.0f,   // 2
+		0.0f, 0.0f, 0.0f,    // 3
+	};
+
 	// 两个三角形，顶点的顺序
 	unsigned int index2[] =
 	{
@@ -84,7 +106,11 @@ int main()
 	};
 
 	GLVAO* vao = new GLVAO();
-	vao->addVertx3D(vertex2, 4, 0);
+
+	// 在vao中添加vbo
+	vao->addVertx3D(vertex2, 4, 0);  // 这里的0是vertexShader中的layout
+	vao->addVertx3D(vertexUv, 4, 1);
+
 	vao->setIndex(index2, 6);
 
 	//printf("vertexShader: %s/n", vertexShader);
@@ -112,7 +138,7 @@ int main()
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth, imgHeight, 0, GL_RGB, GL_UNPACK_ALIGNMENT, imgData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth, imgHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData);
 
 	float verValue = 0.5;
 	while (!glfwWindowShouldClose(window)) {
@@ -125,8 +151,8 @@ int main()
 		GLint local = glGetUniformLocation(program->getProgram(), "temp");
 		glUniform1f(local, verValue);
 
-		// 纹理单元，只有通过纹理单元，才能传递texture
-		GLint localTexture = glGetUniformLocation(program->getProgram(), "texture");
+		// 纹理单元，只有通过纹理单元，才能传递imgTexture
+		GLint localTexture = glGetUniformLocation(program->getProgram(), "imgTexture");
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureId);
 		glUniform1i(localTexture, 0);
