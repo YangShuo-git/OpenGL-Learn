@@ -3,10 +3,9 @@
 //
 
 #include "com_example_opengles_project_GLRender.h"
-#include <GLES/gl.h>
-#include <GLES2/gl2.h>
 
-//#include "CCNDKLogDef.h"
+#include "Log.h"
+#include "GLPrimitives.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,11 +16,16 @@ void Java_com_example_opengles_1project_GLRender_n_1initGL(JNIEnv *, jobject) {
     glClearDepthf(1.0);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
+
+    LOGD("OpenGL init");
 }
 
 void Java_com_example_opengles_1project_GLRender_n_1drawGL(JNIEnv *, jobject){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
+
+    drawTriangle();
+    drawRectangle();
 }
 
 void Java_com_example_opengles_1project_GLRender_n_1changeSizeGL(JNIEnv *, jobject, jint width, jint height){
@@ -30,7 +34,13 @@ void Java_com_example_opengles_1project_GLRender_n_1changeSizeGL(JNIEnv *, jobje
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
+    // 正交投影
     glOrthof(-1,1,-1,1,0.1,1000.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    LOGD("OpenGL change size: %d, %d", width, height);
 }
 
 #ifdef __cplusplus
