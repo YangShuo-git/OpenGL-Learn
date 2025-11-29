@@ -25,7 +25,9 @@ void Java_com_example_opengles_1project_GLRender_n_1drawGL(JNIEnv *, jobject){
     glLoadIdentity();
 
     drawTriangle();
-    drawRectangle();
+//    drawRectangle();
+//    drawLine();
+//    drawPoint();
 }
 
 void Java_com_example_opengles_1project_GLRender_n_1changeSizeGL(JNIEnv *, jobject, jint width, jint height){
@@ -34,7 +36,7 @@ void Java_com_example_opengles_1project_GLRender_n_1changeSizeGL(JNIEnv *, jobje
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    // 正交投影
+    // 正交投影 相当于摄像机  n是朝里，z是朝外，0.1和-0.1正在在一个平面  n<0.1的值都能拍摄到
     glOrthof(-1,1,-1,1,0.1,1000.0);
 
     glMatrixMode(GL_MODELVIEW);
