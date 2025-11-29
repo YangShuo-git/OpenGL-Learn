@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project("GLRender")
 
+SET(GLM_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libglm)
+INCLUDE_DIRECTORIES(${GLM_DIR}/include)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         GLRender.cpp
