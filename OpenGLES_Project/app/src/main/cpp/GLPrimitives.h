@@ -109,10 +109,6 @@ void drawPoint() {
     glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-void drawWave() {
-
-}
-
 #ifdef __cplusplus
 }
 #endif

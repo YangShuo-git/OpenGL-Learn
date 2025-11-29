@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 void Java_com_example_opengles_1project_GLRender_n_1initGL(JNIEnv *, jobject) {
-    glClearColor(1.0,0.0,0.0,1.0);
+    glClearColor(0.0,0.0,0.0,1.0);
     glClearDepthf(1.0);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
