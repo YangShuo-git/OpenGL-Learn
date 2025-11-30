@@ -21,24 +21,21 @@ public class GLRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         AssetManager assetManager = m_Ctx.getAssets();
-        n_initGL();
-
-        n_readAssetFile(assetManager, "earth.png");
+        n_glInit(assetManager);
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
-        n_changeSizeGL(width, height);
+        n_glSizeChanged(width, height);
     }
 
     @Override
     public void onDrawFrame(GL10 gl10) {
-        n_drawGL();
+        n_glDraw();
     }
 
 
-    private native void n_initGL();
-    private native void n_drawGL();
-    private native void n_changeSizeGL(int width,int height);
-    private native int n_readAssetFile(AssetManager assetManager, String fileName);
+    private native void n_glInit(AssetManager assetManager);
+    private native void n_glSizeChanged(int width,int height);
+    private native void n_glDraw();
 }

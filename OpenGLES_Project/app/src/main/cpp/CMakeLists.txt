@@ -10,8 +10,13 @@ SET(STBIMG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libstbImage)
 INCLUDE_DIRECTORIES(${GLM_DIR}/include)
 INCLUDE_DIRECTORIES(${STBIMG_DIR}/include)
 
+aux_source_directory(. DIR_SRCS)
+
 add_library(${CMAKE_PROJECT_NAME} SHARED
-        GLRender.cpp
+        NdkRender.cpp
+        NdkTexture.cpp
+        ImageReader.cpp
+        native-lib.cpp
     )
 
 
