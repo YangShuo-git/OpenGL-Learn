@@ -1,5 +1,6 @@
 package com.example.opengles_project;
 
+import android.content.res.AssetManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
@@ -17,10 +18,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        m_render = new GLRender();
+
+        m_render = new GLRender(this);
         m_glSurfaceView = new GLSurfaceView(this);
         m_glSurfaceView.setRenderer(m_render);
-
+        AssetManager assetManager = this.getAssets();
 
         //setContentView(R.layout.activity_main);
         setContentView(m_glSurfaceView);

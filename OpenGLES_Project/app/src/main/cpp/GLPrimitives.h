@@ -20,6 +20,27 @@
 extern "C" {
 #endif
 
+struct  PriFloat3{
+    float x;
+    float y;
+    float z;
+};
+
+struct  PriFloat4{
+    float r;
+    float g;
+    float b;
+    float a;
+};
+
+struct  PriFloat5{
+    float x;
+    float y;
+    float z;
+    float u;
+    float v;
+};
+
 struct  PriFloat7{
     float x;
     float y;
@@ -30,13 +51,10 @@ struct  PriFloat7{
     float a;
 };
 
-struct  PriFloat3{
-    float x;
-    float y;
-    float z;
-};
+float g_angle = 0.0f;
+GLuint g_texID;
 
-float angle = 0.0f;
+
 void drawTriangle() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -53,12 +71,12 @@ void drawTriangle() {
     glEnableClientState(GL_COLOR_ARRAY);
     glColorPointer(4, GL_FLOAT, sizeof(PriFloat7),&vertexTriangle[0].r);
 
-    angle += 0.01f; //旋转速度
+    g_angle += 0.01f; //旋转速度
 
     glm::mat4x4  cubeMat;
-    glm::mat4x4  cubeTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -0.5));   //平移
-    glm::mat4x4  cubeRotMat   = glm::rotate(glm::mat4(1.0f),angle,glm::vec3(0.5f, 0.5f, 1.0) ); //旋转
-    glm::mat4x4  cubeScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(0.5f, 0.4f, 0.1) );        //缩放
+    glm::mat4x4  cubeTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -0.5));           //平移
+    glm::mat4x4  cubeRotMat   = glm::rotate(glm::mat4(1.0f),g_angle,glm::vec3(0.5f, 0.5f, 1.0) ); //旋转
+    glm::mat4x4  cubeScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(0.5f, 0.4f, 0.1) );                //缩放
     cubeMat = cubeTransMat * cubeRotMat * cubeScaleMat;
 
     glLoadMatrixf(glm::value_ptr(cubeMat));
@@ -129,6 +147,35 @@ void drawPoint() {
     glDrawArrays(GL_POINTS,0,4);
 
     glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+void drawPicture() {
+    PriFloat5 planVertices[] =
+            {
+                    { -1.0f, -1.0f, 1.0f,    0,  0 },
+                    {  -1.0f,1.0f, 1.0f,   0,  1 },
+                    {  1.0f,-1.0f, 1.0f,    1,  0 },
+                    {  1.0f, 1.0f, 1.0f,    1,  1 },
+            };
+
+    glBindTexture(GL_TEXTURE_2D, g_texID);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glVertexPointer(3,GL_FLOAT,sizeof(PriFloat5), planVertices);
+    glTexCoordPointer(2,GL_FLOAT,sizeof(PriFloat5), &planVertices[0].u);
+
+    glm::mat4x4  cubeMat;
+    glm::mat4x4  cubeTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -0.5));
+    glm::mat4x4  cubeRotMat   = glm::rotate(glm::mat4(1.0f),g_angle,glm::vec3(0.5f, 0.5f, 1.0) );
+    glm::mat4x4  cubeScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(0.5f, 0.3f, 0.1) );
+    cubeMat = cubeTransMat * cubeRotMat * cubeScaleMat;
+    glLoadMatrixf(glm::value_ptr(cubeMat));
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 #ifdef __cplusplus

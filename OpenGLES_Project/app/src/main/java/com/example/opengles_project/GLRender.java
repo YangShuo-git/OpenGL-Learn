@@ -1,5 +1,7 @@
 package com.example.opengles_project;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.opengl.GLSurfaceView;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -10,9 +12,18 @@ public class GLRender implements GLSurfaceView.Renderer {
         System.loadLibrary("GLRender");
     }
 
+    private Context m_Ctx;
+
+    GLRender(Context ctx) {
+        m_Ctx = ctx;
+    }
+
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+        AssetManager assetManager = m_Ctx.getAssets();
         n_initGL();
+
+        n_readAssetFile(assetManager, "earth.png");
     }
 
     @Override
@@ -26,7 +37,8 @@ public class GLRender implements GLSurfaceView.Renderer {
     }
 
 
-    private native  void n_initGL();
-    private native  void n_drawGL();
-    private native  void n_changeSizeGL(int width,int height);
+    private native void n_initGL();
+    private native void n_drawGL();
+    private native void n_changeSizeGL(int width,int height);
+    private native int n_readAssetFile(AssetManager assetManager, String fileName);
 }

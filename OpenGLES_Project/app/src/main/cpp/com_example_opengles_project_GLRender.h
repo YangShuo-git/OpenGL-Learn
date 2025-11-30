@@ -31,6 +31,11 @@ JNIEXPORT void JNICALL Java_com_example_opengles_1project_GLRender_n_1drawGL
 JNIEXPORT void JNICALL Java_com_example_opengles_1project_GLRender_n_1changeSizeGL
   (JNIEnv *, jobject, jint, jint);
 
+JNIEXPORT int JNICALL
+Java_com_example_opengles_1project_GLRender_n_1readAssetFile(JNIEnv *env, jobject thiz,
+                                                             jobject asset_manager,
+                                                             jstring file_name);
+
 #ifdef __cplusplus
 }
 #endif
