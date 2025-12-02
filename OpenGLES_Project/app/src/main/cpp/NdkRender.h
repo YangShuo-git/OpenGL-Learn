@@ -20,6 +20,10 @@ public:
     void setupAssetManager(AAssetManager *pManager);
 
     void drawTriangle();
+    void drawRectangle();
+    void drawPoint();
+    void drawLine();
+    void drawPicture();
 
 private:
     void loadTextureResources(AAssetManager *pManager);

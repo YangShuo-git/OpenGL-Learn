@@ -13,12 +13,8 @@ INCLUDE_DIRECTORIES(${STBIMG_DIR}/include)
 aux_source_directory(. DIR_SRCS)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
-        NdkRender.cpp
-        NdkTexture.cpp
-        ImageReader.cpp
-        native-lib.cpp
+        ${DIR_SRCS}
     )
-
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         -lGLESv1_CM

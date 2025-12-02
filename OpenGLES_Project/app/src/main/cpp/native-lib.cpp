@@ -2,6 +2,7 @@
 // Created by BaiYang on 2025-11-30.
 //
 
+#define LOG_TAG "GLRenderJNI"
 #include <jni.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
@@ -11,12 +12,9 @@
 
 NdkRender g_ndkRender;
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define LOG_TAG "GLRenderJNI"
 
 void n_glInit(JNIEnv *env, jobject thiz, jobject asset_manager) {
     LOGI("n_glInit called.");
@@ -39,14 +37,13 @@ void n_glDraw(JNIEnv *env, jobject thiz) {
     g_ndkRender.draw();
 }
 
-// 定义方法映射表 这个数组定义了 Java 方法如何映射到 C/C++ 函数
+
 static JNINativeMethod g_methods[] = {
         {"n_glInit", "(Landroid/content/res/AssetManager;)V", (void *)n_glInit},
         {"n_glSizeChanged", "(II)V", (void *)n_glSizeChanged},
         {"n_glDraw", "()V", (void *)n_glDraw}
 };
 
-// 动态注册函数
 static int register_native_methods(JNIEnv* env, const char* class_name) {
     jclass clazz = env->FindClass(class_name);
     if (clazz == nullptr) {
@@ -79,7 +76,6 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     }
 
     LOGI("JNI_OnLoad finished. Native methods registered successfully.");
-    // 返回所使用的 JNI 版本
     return JNI_VERSION_1_6;
 }
 

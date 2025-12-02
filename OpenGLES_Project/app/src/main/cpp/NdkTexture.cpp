@@ -1,7 +1,7 @@
 //
 // Created by BaiYang on 2025-11-30.
 //
-
+#define LOG_TAG "NdkRender"
 #include "NdkTexture.h"
 
 NdkTexture::NdkTexture():m_texID(-1){
@@ -24,7 +24,7 @@ GLuint NdkTexture::createTextureFromFile(AAssetManager *assetManager, const char
 GLuint NdkTexture::generateTexture(AAssetManager *assetManager, const char *fileName) {
     AAsset *asset = AAssetManager_open (assetManager, fileName, AASSET_MODE_UNKNOWN);
     if (nullptr == asset){
-        LOGF("asset is nullptr");
+        LOGE("asset is nullptr");
         return -1;
     }
     off_t bufferSize = AAsset_getLength(asset);
@@ -32,7 +32,7 @@ GLuint NdkTexture::generateTexture(AAssetManager *assetManager, const char *file
 
     unsigned char *imgBuff = (unsigned char *)malloc(bufferSize + 1);
     if (nullptr == imgBuff){
-        LOGF("imgBuff alloc failed");
+        LOGE("imgBuff alloc failed");
         return -1;
     }
     memset(imgBuff, 0, bufferSize + 1);
@@ -44,12 +44,10 @@ GLuint NdkTexture::generateTexture(AAssetManager *assetManager, const char *file
     GLuint texID = createOpenGLTexture(pImageReader);
 
     delete pImageReader;
-
     if (imgBuff){
         free(imgBuff);
         imgBuff = nullptr;
     }
-
     AAsset_close(asset);
 
     return texID;
@@ -62,16 +60,18 @@ GLuint NdkTexture::createOpenGLTexture(ImageReader *pImgReader) {
 
     GLuint textureID;
     glEnable(GL_TEXTURE_2D);
-    glGenTextures(1,&textureID);//产生纹理索引
+    glGenTextures(1,&textureID);//生成纹理索引
     glBindTexture(GL_TEXTURE_2D,textureID);//绑定纹理索引，之后的操作都针对当前纹理索引
 
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);//当纹理图象被使用到一个大于它的形状上时
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);//当纹理图象被使用到一个小于或等于它的形状上时
+    //配置参数，告诉GPU当纹理被拉伸、缩小或超出坐标范围时该如何处理
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    //将图片数据就从的CPU传输到了GPU的显存中，也即当前的纹理索引
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,
                  pImgReader->getWidth(),pImgReader->getHeight(),0,
-                 GL_RGBA,GL_UNSIGNED_BYTE,pImgReader->getData());//指定参数，生成纹理
+                 GL_RGBA,GL_UNSIGNED_BYTE,pImgReader->getData());
 
     return textureID;
 }
