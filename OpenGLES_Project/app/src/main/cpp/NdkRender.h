@@ -17,7 +17,7 @@ public:
     void draw();
     void sizeChanged(int w, int h);
 
-    void setupAssetManager(AAssetManager *pManager);
+    void setAssetManager(AAssetManager *pManager);
 
     void drawTriangle();
     void drawRectangle();

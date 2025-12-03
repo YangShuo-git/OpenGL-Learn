@@ -22,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
         m_render = new GLRender(this);
         m_glSurfaceView = new GLSurfaceView(this);
         m_glSurfaceView.setRenderer(m_render);
-        AssetManager assetManager = this.getAssets();
 
+        //AssetManager assetManager = this.getAssets();
         //setContentView(R.layout.activity_main);
         setContentView(m_glSurfaceView);
     }

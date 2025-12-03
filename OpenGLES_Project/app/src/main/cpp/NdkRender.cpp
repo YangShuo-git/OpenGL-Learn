@@ -45,7 +45,7 @@ void NdkRender::sizeChanged(int w, int h) {
 //    glFrustumf(-1,1,-1,1,0.1,1000.0);
 }
 
-void NdkRender::setupAssetManager(AAssetManager *pManager) {
+void NdkRender::setAssetManager(AAssetManager *pManager) {
     if(pManager == nullptr){
         return;
     }

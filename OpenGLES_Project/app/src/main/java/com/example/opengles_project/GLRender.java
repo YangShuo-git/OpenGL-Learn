@@ -12,15 +12,15 @@ public class GLRender implements GLSurfaceView.Renderer {
         System.loadLibrary("GLRender");
     }
 
-    private Context m_Ctx;
+    private Context m_ctx;
 
     GLRender(Context ctx) {
-        m_Ctx = ctx;
+        m_ctx = ctx;
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
-        AssetManager assetManager = m_Ctx.getAssets();
+        AssetManager assetManager = m_ctx.getAssets();
         n_glInit(assetManager);
     }
 

@@ -19,10 +19,9 @@ extern "C" {
 void n_glInit(JNIEnv *env, jobject thiz, jobject asset_manager) {
     LOGI("n_glInit called.");
     // 将 Java 传递过来的 AssetManager 转换为 C 层可用的 AAssetManager
-    // 并将其保存为全局引用，注意在多线程环境下的处理
     AAssetManager *astManager  = AAssetManager_fromJava(env, asset_manager);
     if (astManager != nullptr) {
-        g_ndkRender.setupAssetManager(astManager);
+        g_ndkRender.setAssetManager(astManager);
     }
 
     g_ndkRender.init();
