@@ -7,6 +7,7 @@
 
 #include "CommonDef.h"
 #include "Log.h"
+#include "NdkBuffer.h"
 
 class NdkRender {
 public:
@@ -34,6 +35,9 @@ private:
     GLuint m_texID[6];
 
     AAssetManager *m_pAssetManager;
+
+    NdkBuffer* m_pVBO;
+    NdkBuffer* m_pEBO;
 };
 
 

@@ -6,11 +6,15 @@
 #include "NdkTexture.h"
 
 NdkRender::NdkRender():m_pAssetManager(nullptr) {
-
+    m_pVBO = new NdkBuffer(NdkBuffer::VertexBuffer,NdkBuffer::StaticDraw);
+    m_pEBO = new NdkBuffer(NdkBuffer::IndexBuffer,NdkBuffer::StaticDraw);
 }
 
 NdkRender::~NdkRender() {
     glDeleteTextures(6,m_texID);
+
+    safeDeletePtr(m_pVBO);
+    safeDeletePtr(m_pEBO);
 }
 
 void NdkRender::init() {
@@ -22,6 +26,27 @@ void NdkRender::init() {
     if(m_pAssetManager != nullptr){
         loadTextureResources(m_pAssetManager);
     }
+
+    PriFloat5 planVertices[] = {
+        { -1.0f, -1.0f, 1.0f, 0, 0 },
+        { -1.0f, 1.0f, 1.0f, 0, 1 },
+        { 1.0f, -1.0f, 1.0f, 1, 0 },
+        { 1.0f, 1.0f, 1.0f, 1, 1 },
+    };
+
+    const short cubeIndexs[]= {
+        0, 1, 2,  2, 1, 3,
+    };
+
+    m_pVBO->create();
+    m_pVBO->bind();
+    m_pVBO->setBufferData(planVertices, sizeof(planVertices));
+    m_pVBO->release();
+
+    m_pEBO->create();
+    m_pEBO->bind();
+    m_pEBO->setBufferData(cubeIndexs, sizeof(cubeIndexs));
+    m_pEBO->release();
 }
 
 void NdkRender::draw() {
@@ -68,6 +93,38 @@ void NdkRender::loadTextureResources(AAssetManager *pManager) {
 
 void NdkRender::loadShaderResources(AAssetManager *pManager) {
 
+}
+
+void NdkRender::drawPicture() {
+    m_pVBO->bind();
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    float* addrVertex = (float*)0;
+    float* uvAddress = (float*)12;
+
+    glVertexPointer(3,GL_FLOAT,sizeof(PriFloat5),addrVertex);
+    glTexCoordPointer(2,GL_FLOAT,sizeof(PriFloat5),uvAddress);
+
+    glm::mat4x4  cubeMat;
+    glm::mat4x4  cubeTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -0.5));
+    glm::mat4x4  cubeRotMat   = glm::rotate(glm::mat4(1.0f),m_angle,glm::vec3(0.5f, 0.5f, 1.0) );
+    glm::mat4x4  cubeScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(0.5f, 0.3f, 0.1) );
+    cubeMat = cubeTransMat * cubeRotMat * cubeScaleMat;
+    glLoadMatrixf(glm::value_ptr(cubeMat));
+
+    m_pEBO->bind();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D,m_texID[0]);
+
+    const short* indices =(const short *) (0*6*sizeof(short));
+    glDrawElements(GL_TRIANGLES, 6,  GL_UNSIGNED_SHORT, indices);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    m_pVBO->release();
+    m_pEBO->release();
 }
 
 void NdkRender::drawTriangle() {
@@ -162,33 +219,4 @@ void NdkRender::drawLine() {
     glDrawArrays(GL_LINE_LOOP,0,4);
 
     glDisableClientState(GL_VERTEX_ARRAY);
-}
-
-void NdkRender::drawPicture() {
-    PriFloat5 planVertices[] =
-            {
-            { -1.0f, -1.0f, 1.0f, 0, 0 },
-            { -1.0f, 1.0f, 1.0f, 0, 1 },
-            { 1.0f, -1.0f, 1.0f, 1, 0 },
-            { 1.0f, 1.0f, 1.0f, 1, 1 },
-            };
-
-    glBindTexture(GL_TEXTURE_2D, m_texID[0]);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glVertexPointer(3,GL_FLOAT,sizeof(PriFloat5),planVertices);
-    glTexCoordPointer(2,GL_FLOAT,sizeof(PriFloat5),&planVertices[0].u);
-
-    glm::mat4x4  cubeMat;
-    glm::mat4x4  cubeTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -0.5));
-    glm::mat4x4  cubeRotMat   = glm::rotate(glm::mat4(1.0f),m_angle,glm::vec3(0.5f, 0.5f, 1.0) );
-    glm::mat4x4  cubeScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(0.5f, 0.3f, 0.1) );
-    cubeMat = cubeTransMat * cubeRotMat * cubeScaleMat;
-    glLoadMatrixf(glm::value_ptr(cubeMat));
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }

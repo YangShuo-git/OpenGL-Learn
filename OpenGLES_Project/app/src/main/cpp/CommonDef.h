@@ -59,4 +59,12 @@ struct  PriFloat7{
 }
 #endif
 
+template<typename T>
+void safeDeletePtr(T* ptr)
+{
+    delete ptr;
+    ptr = NULL;
+}
+
+
 #endif //OPENGLES_PROJECT_COMMONDEF_H
