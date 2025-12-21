@@ -6,8 +6,9 @@
 #define OPENGLES_PROJECT_NDKRENDER_H
 
 #include "CommonDef.h"
-#include "Log.h"
+#include "NdkTexture.h"
 #include "NdkBuffer.h"
+#include "NdkShader.h"
 
 class NdkRender {
 public:
@@ -26,6 +27,8 @@ public:
     void drawLine();
     void drawPicture();
 
+    void drawTriangle3();
+
 private:
     void loadTextureResources(AAssetManager *pManager);
     void loadShaderResources(AAssetManager *pManager);
@@ -38,6 +41,8 @@ private:
 
     NdkBuffer* m_pVBO;
     NdkBuffer* m_pEBO;
+
+    NdkShader* m_pShader;
 };
 
 

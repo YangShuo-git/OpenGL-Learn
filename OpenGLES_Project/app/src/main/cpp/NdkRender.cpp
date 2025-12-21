@@ -3,18 +3,19 @@
 //
 #define LOG_TAG "NdkRender"
 #include "NdkRender.h"
-#include "NdkTexture.h"
 
 NdkRender::NdkRender():m_pAssetManager(nullptr) {
-    m_pVBO = new NdkBuffer(NdkBuffer::VertexBuffer,NdkBuffer::StaticDraw);
-    m_pEBO = new NdkBuffer(NdkBuffer::IndexBuffer,NdkBuffer::StaticDraw);
+//    m_pVBO = new NdkBuffer(NdkBuffer::VertexBuffer,NdkBuffer::StaticDraw);
+//    m_pEBO = new NdkBuffer(NdkBuffer::IndexBuffer,NdkBuffer::StaticDraw);
+
+    m_pShader = new NdkShader();
 }
 
 NdkRender::~NdkRender() {
     glDeleteTextures(6,m_texID);
 
-    safeDeletePtr(m_pVBO);
-    safeDeletePtr(m_pEBO);
+//    safeDeletePtr(m_pVBO);
+//    safeDeletePtr(m_pEBO);
 }
 
 void NdkRender::init() {
@@ -23,10 +24,13 @@ void NdkRender::init() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
-    if(m_pAssetManager != nullptr){
+    if(m_pAssetManager != nullptr) {
         loadTextureResources(m_pAssetManager);
+        loadShaderResources(m_pAssetManager);
     }
 
+    // 2.0的使用方式
+#if 0
     PriFloat5 planVertices[] = {
         { -1.0f, -1.0f, 1.0f, 0, 0 },
         { -1.0f, 1.0f, 1.0f, 0, 1 },
@@ -47,27 +51,34 @@ void NdkRender::init() {
     m_pEBO->bind();
     m_pEBO->setBufferData(cubeIndexs, sizeof(cubeIndexs));
     m_pEBO->release();
+#endif
 }
 
 void NdkRender::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    drawTriangle3();
+    // 2.0的使用方式
+#if 0
     glLoadIdentity();
 
-//    drawTriangle();
-//    drawRectangle();
-//    drawPoint();
-//    drawLine();
+    drawTriangle();
+    drawRectangle();
+    drawPoint();
+    drawLine();
     drawPicture();
+#endif
 }
 
 void NdkRender::sizeChanged(int w, int h) {
     glViewport(0,0,w,h);
 
+    // 2.0的使用方式
+#if 0
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
     glOrthof(-1,1,-1,1,0.1,1000.0);
-//    glFrustumf(-1,1,-1,1,0.1,1000.0);
+#endif
 }
 
 void NdkRender::setAssetManager(AAssetManager *pManager) {
@@ -80,21 +91,49 @@ void NdkRender::setAssetManager(AAssetManager *pManager) {
 void NdkRender::loadTextureResources(AAssetManager *pManager) {
     NdkTexture glTexture;
     m_texID[0] = glTexture.createTextureFromFile(pManager, "earth.png");
-//    for(int i=1; i<6; i++){
-//        char nameBuff[6];
-//        memset(nameBuff,0,sizeof(nameBuff));
-//        sprintf(nameBuff,"%d.png",i+1);
-//        nameBuff[5]='\0';
-//        LOGD("Image Name:%s",nameBuff);
-//        NdkTexture glTexture;
-//        m_texID[i] = glTexture.createTextureFromFile(pManager,nameBuff);
-//    }
 }
 
 void NdkRender::loadShaderResources(AAssetManager *pManager) {
-
+    m_pShader->initShadersFromFile(pManager, "vertex.glsl", "fragment.glsl");
 }
 
+void NdkRender::drawTriangle3() {
+    PriFloat7 triangleVert[] ={
+        {0,       0.5,    -1,  1,  0,  0,1.0},
+        {-0.5,   -0.5,    -1,  0,  1,  0,1.0},
+        {0.5,    -0.5,    -1,  0,  0,  1,1.0},
+    };
+
+    m_angle += 0.01f;
+
+    glm::mat4x4 cubeMat;
+    glm::mat4x4 cubeTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3));
+    glm::mat4x4 cubeRotMat = glm::rotate(glm::mat4(1.0f),m_angle,glm::vec3(1.0f, 1.0f, 1.0) );
+    glm::mat4x4 cubeScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(0.3f, 0.2f, 0.3) );
+
+    glm::mat4 projMat = glm::perspective(glm::radians(60.0f), (float)9/(float)18, 0.1f, 1000.0f);
+    cubeMat = projMat* cubeTransMat ;
+
+    m_pShader->bind();
+
+    m_pShader->setUniformValue("u_mat", cubeMat);
+
+    m_pShader->enableAttributeArray("a_position");
+    m_pShader->enableAttributeArray("a_color");
+
+    m_pShader->setAttributeBuffer("a_position",GL_FLOAT,triangleVert,3,sizeof(PriFloat7));
+    m_pShader->setAttributeBuffer("a_color",GL_FLOAT,&triangleVert[0].r,4,sizeof(PriFloat7));
+
+    glDrawArrays(GL_TRIANGLES,0,3);
+
+    m_pShader->disableAttributeArray("a_position");
+    m_pShader->disableAttributeArray("a_color");
+
+    m_pShader->release();
+}
+
+// 2.0的使用方式
+#if 0
 void NdkRender::drawPicture() {
     m_pVBO->bind();
 
@@ -224,3 +263,4 @@ void NdkRender::drawLine() {
 
     glDisableClientState(GL_VERTEX_ARRAY);
 }
+#endif
