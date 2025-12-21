@@ -6,7 +6,6 @@
 #define OPENGLES_PROJECT_NDKTEXTURE_H
 
 #include "CommonDef.h"
-#include "Log.h"
 #include "ImageReader.h"
 
 class NdkTexture {

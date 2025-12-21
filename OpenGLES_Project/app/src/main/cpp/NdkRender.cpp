@@ -98,14 +98,18 @@ void NdkRender::loadShaderResources(AAssetManager *pManager) {
 void NdkRender::drawPicture() {
     m_pVBO->bind();
 
+    //启用顶点数组功能，否则glVertexPointer设置无效
+    //启用纹理坐标数组功能，否则glTexCoordPointer设置无效
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    float* addrVertex = (float*)0;
-    float* uvAddress = (float*)12;
+    //顶点位置从结构体开始位置（偏移0字节）开始
+    //纹理坐标从偏移12字节（3个float × 4字节）开始
+    float* vertexAddr = (float*)0;
+    float* uvAddr = (float*)(3 * sizeof(float));
 
-    glVertexPointer(3,GL_FLOAT,sizeof(PriFloat5),addrVertex);
-    glTexCoordPointer(2,GL_FLOAT,sizeof(PriFloat5),uvAddress);
+    glVertexPointer(3,GL_FLOAT,sizeof(PriFloat5),vertexAddr);
+    glTexCoordPointer(2,GL_FLOAT,sizeof(PriFloat5),uvAddr);
 
     glm::mat4x4  cubeMat;
     glm::mat4x4  cubeTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -0.5));

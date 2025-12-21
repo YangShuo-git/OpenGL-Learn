@@ -20,6 +20,8 @@
 #include <android/asset_manager_jni.h>
 #include <android/asset_manager.h>
 
+#include "Log.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
