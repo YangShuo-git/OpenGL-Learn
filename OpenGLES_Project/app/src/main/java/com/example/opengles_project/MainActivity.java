@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
         m_render = new GLRender(this);
         m_glSurfaceView = new GLSurfaceView(this);
+        m_glSurfaceView.setEGLContextClientVersion(3);
         m_glSurfaceView.setRenderer(m_render);
 
         //AssetManager assetManager = this.getAssets();

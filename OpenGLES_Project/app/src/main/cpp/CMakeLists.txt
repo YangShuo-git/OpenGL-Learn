@@ -17,8 +17,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
     )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-        -lGLESv1_CM
-        -lGLESv2
+        -lGLESv3
 
         android
         log)

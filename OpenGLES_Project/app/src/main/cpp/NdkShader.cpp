@@ -83,49 +83,49 @@ int NdkShader::compileShader(AAssetManager*  pManager,const char* fName, GLint s
 }
 
 
-void NdkShader::Bind()
+void NdkShader::bind()
 {
     glUseProgram(m_shaderProgram);
 }
 
-void NdkShader::Release()
+void NdkShader::release()
 {
     glUseProgram(0);
 }
 
-void NdkShader::SetUniformValue(const char* name, int iValue)
+void NdkShader::setUniformValue(const char* name, int iValue)
 {
     glUniform1i(glGetUniformLocation(m_shaderProgram, name), iValue);
 }
 
-void NdkShader::SetUniformValue(const char* name, GLfloat fValue)
+void NdkShader::setUniformValue(const char* name, GLfloat fValue)
 {
     glUniform1f(glGetUniformLocation(m_shaderProgram, name), fValue);
 }
 
-void NdkShader::SetUniformValue(const char* name, glm::vec3 vec3Value)
+void NdkShader::setUniformValue(const char* name, glm::vec3 vecValue)
 {
-    glUniform3fv(glGetUniformLocation(m_shaderProgram, name), 1, glm::value_ptr(vec3Value));
+    glUniform3fv(glGetUniformLocation(m_shaderProgram, name), 1, glm::value_ptr(vecValue));
 }
 
-void NdkShader::SetUniformValue(const char* name, glm::mat4 matValue)
+void NdkShader::setUniformValue(const char* name, glm::mat4 matValue)
 {
     glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, name) , 1 , GL_FALSE , glm::value_ptr(matValue));
 }
 
-void NdkShader::EnableAttributeArray(const char *name)
+void NdkShader::enableAttributeArray(const char *name)
 {
     GLuint location = glGetAttribLocation(m_shaderProgram, name);
     glEnableVertexAttribArray(location);
 }
 
-void NdkShader::DisableAttributeArray(const char *name)
+void NdkShader::disableAttributeArray(const char *name)
 {
     GLuint location = glGetAttribLocation(m_shaderProgram, name);
     glDisableVertexAttribArray(location);
 }
 
-void NdkShader::SetAttributeBuffer(const char* name,GLenum type, const void *values, int tupleSize, int stride)
+void NdkShader::setAttributeBuffer(const char* name, GLenum type, const void *values, int tupleSize, int stride)
 {
     GLuint location = glGetAttribLocation(m_shaderProgram, name);
     glVertexAttribPointer(location,tupleSize,type,GL_FALSE,stride,values);

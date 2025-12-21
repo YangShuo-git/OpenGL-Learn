@@ -13,19 +13,19 @@ public:
     NdkShader();
     ~NdkShader();
 
-    void Bind();
-    void Release();
+    void bind();
+    void release();
 
     void InitShadersFromFile(AAssetManager*  pManager, const char* vShader,const char* fshader);
 
-    void DisableAttributeArray(const char *name);
-    void EnableAttributeArray(const char *name);
-    void SetAttributeBuffer(const char* name,GLenum type, const void *values, int tupleSize, int stride = 0);
+    void disableAttributeArray(const char *name);
+    void enableAttributeArray(const char *name);
+    void setAttributeBuffer(const char* name, GLenum type, const void *values, int tupleSize, int stride = 0);
 
-    void SetUniformValue(const char* name, int iValue);
-    void SetUniformValue(const char* name, GLfloat fValue);
-    void SetUniformValue(const char* name, glm::vec3 vecValue);
-    void SetUniformValue(const char* name, glm::mat4 matValue);
+    void setUniformValue(const char* name, int iValue);
+    void setUniformValue(const char* name, GLfloat fValue);
+    void setUniformValue(const char* name, glm::vec3 vecValue);
+    void setUniformValue(const char* name, glm::mat4 matValue);
 
 private:
     int compileShader(AAssetManager*  m_pAssetManager,const char* sPath, GLint sType);
