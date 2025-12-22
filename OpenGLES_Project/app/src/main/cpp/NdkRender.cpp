@@ -57,6 +57,7 @@ void NdkRender::init() {
 void NdkRender::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawTriangle3();
+
     // 2.0的使用方式
 #if 0
     glLoadIdentity();
