@@ -29,6 +29,7 @@ public:
 
 private:
     int compileShader(AAssetManager*  m_pAssetManager,const char* sPath, GLint sType);
+
 private:
     GLuint m_shaderProgram;
 };
