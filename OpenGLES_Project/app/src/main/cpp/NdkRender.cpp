@@ -5,8 +5,9 @@
 #include "NdkRender.h"
 
 NdkRender::NdkRender():m_pAssetManager(nullptr) {
-//    m_pVBO = new NdkBuffer(NdkBuffer::VertexBuffer,NdkBuffer::StaticDraw);
-//    m_pEBO = new NdkBuffer(NdkBuffer::IndexBuffer,NdkBuffer::StaticDraw);
+    m_pVAO = new NdkVAO();
+    m_pVBO = new NdkBuffer(NdkBuffer::VertexBuffer,NdkBuffer::StaticDraw);
+    m_pEBO = new NdkBuffer(NdkBuffer::IndexBuffer,NdkBuffer::StaticDraw);
 
     m_pShader = new NdkShader();
 }
@@ -14,8 +15,8 @@ NdkRender::NdkRender():m_pAssetManager(nullptr) {
 NdkRender::~NdkRender() {
     glDeleteTextures(6,m_texID);
 
-//    safeDeletePtr(m_pVBO);
-//    safeDeletePtr(m_pEBO);
+    safeDeletePtr(m_pVBO);
+    safeDeletePtr(m_pEBO);
 }
 
 void NdkRender::init() {
@@ -28,6 +29,8 @@ void NdkRender::init() {
         loadTextureResources(m_pAssetManager);
         loadShaderResources(m_pAssetManager);
     }
+
+    setupDrawingRect();
 
     // 2.0的使用方式
 #if 0
@@ -56,7 +59,8 @@ void NdkRender::init() {
 
 void NdkRender::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    drawTriangle3();
+    // drawTriangle3();
+    drawRect();
 
     // 2.0的使用方式
 #if 0
@@ -98,6 +102,68 @@ void NdkRender::loadShaderResources(AAssetManager *pManager) {
     m_pShader->initShadersFromFile(pManager, "vertex.glsl", "fragment.glsl");
 }
 
+void NdkRender::setupDrawingRect() {
+    PriFloat7 rectVert[] = {
+            {-0.5,   -0.5,  0,  1,  0,  0,1.0},
+            {-0.5,   0.5,   0,  0,  1,  0,1.0},
+            {0.5,    -0.5,  0,  0,  0,  1,1.0},
+            {0.5,    0.5,   0,  1,  1,  0,1.0},
+    };
+
+    unsigned short rectIndex[] = {
+        0,1,2,
+        1,3,2
+    };
+
+    m_pVAO->create();
+    m_pVAO->bind();
+
+    m_pVBO->create();
+    m_pVBO->bind();
+    m_pVBO->setBufferData(rectVert,sizeof(rectVert));
+
+    m_pEBO->create();
+    m_pEBO->bind();
+    m_pEBO->setBufferData(rectIndex,sizeof(rectIndex));
+
+    int offset = 0;
+    m_pShader->setAttributeBuffer(0,GL_FLOAT, (void *)offset, 3, sizeof(PriFloat7));
+    m_pShader->enableAttributeArray(0);
+
+    offset += 3 * sizeof(float);
+    m_pShader->setAttributeBuffer(1,GL_FLOAT, (void *)offset, 4, sizeof(PriFloat7));
+    m_pShader->enableAttributeArray(1);
+
+    m_pVAO->release();
+
+    // 此时EBO的绑定已记录在VAO中，下面解绑EBO是安全的。
+    // 后续在绘制时，只需绑定VAO，其内部记录的EBO状态会自动恢复
+    m_pVBO->release();
+    m_pEBO->release();
+}
+
+void NdkRender::drawRect() {
+    glm::mat4x4  objectMat;
+    glm::mat4x4  objectTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3));
+    glm::mat4x4  objectRotMat = glm::rotate(glm::mat4(1.0f),m_angle,glm::vec3(1.0f, 1.0f, 1.0) );
+    glm::mat4x4  objectScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 1.0f, 1.0f) );
+
+    glm::mat4 projMat = glm::perspective(glm::radians(60.0f), (float)9/(float)18, 0.1f, 1000.0f);
+    objectMat = projMat* objectTransMat * objectScaleMat* objectRotMat ;
+
+    m_pShader->bind();
+    m_pShader->setUniformValue("u_mat",objectMat);
+
+    m_pVAO->bind();
+
+    // 第四个参数indices在传统意义上是一个指针，指向CPU内存中索引数组
+    // 传递 NULL：说明索引数据不在CPU中，而是在当前绑定的 GL_ELEMENT_ARRAY_BUFFER 缓冲区里，并且从该缓冲区的起始位置（偏移量0）开始读取
+    glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,NULL);
+
+    m_pShader->release();
+    m_pVAO->release();
+}
+
 void NdkRender::drawTriangle3() {
     PriFloat7 triangleVert[] ={
         {0,       0.5,    -1,  1,  0,  0,1.0},
@@ -132,6 +198,8 @@ void NdkRender::drawTriangle3() {
 
     m_pShader->release();
 }
+
+
 
 // 2.0的使用方式
 #if 0

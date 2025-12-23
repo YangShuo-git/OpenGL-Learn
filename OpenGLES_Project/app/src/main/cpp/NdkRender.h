@@ -6,9 +6,12 @@
 #define OPENGLES_PROJECT_NDKRENDER_H
 
 #include "CommonDef.h"
+
 #include "NdkTexture.h"
 #include "NdkBuffer.h"
 #include "NdkShader.h"
+#include "NdkVAO.h"
+#include "NdkFBO.h"
 
 class NdkRender {
 public:
@@ -29,6 +32,12 @@ public:
 
     void drawTriangle3();
 
+    void setupDrawingRect();
+    void drawRect();
+
+    void setupDrawingObj();
+    void drawObj();
+
 private:
     void loadTextureResources(AAssetManager *pManager);
     void loadShaderResources(AAssetManager *pManager);
@@ -39,8 +48,10 @@ private:
 
     AAssetManager *m_pAssetManager;
 
+    NdkVAO*    m_pVAO;
     NdkBuffer* m_pVBO;
     NdkBuffer* m_pEBO;
+    NdkFBO*    m_pFBO;
 
     NdkShader* m_pShader;
 };

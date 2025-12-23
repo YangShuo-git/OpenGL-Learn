@@ -21,14 +21,14 @@ NdkShader::~NdkShader()
 
 void NdkShader::initShadersFromFile(AAssetManager* pManager, const char* vShader, const char* fshader)
 {
-    GLuint  vertexId = 0;
-    GLuint  fragId = 0;
+    GLuint vertexId = 0;
+    GLuint fragId = 0;
 
-    vertexId   = compileShader(pManager, vShader , GL_VERTEX_SHADER);
-    fragId     = compileShader(pManager, fshader , GL_FRAGMENT_SHADER);
+    vertexId = compileShader(pManager, vShader , GL_VERTEX_SHADER);
+    fragId   = compileShader(pManager, fshader , GL_FRAGMENT_SHADER);
 
-    char           message[512];
-    int            status = 0;
+    char message[512];
+    int  status = 0;
 
     m_shaderProgram = glCreateProgram();
     if (vertexId != -1) {
@@ -43,14 +43,15 @@ void NdkShader::initShadersFromFile(AAssetManager* pManager, const char* vShader
     glGetProgramiv(m_shaderProgram, GL_LINK_STATUS, &status);
     if (!status) {
         glGetProgramInfoLog(m_shaderProgram, 512, NULL, message);
-        LOGF("get shaderProgram failed: %s", message);
+        LOGE("get shaderProgram failed: %s", message);
     }
 
-    LOGD("shaderProgram sucess!\n");
+    LOGI("shaderProgram sucess!\n");
 
     glDeleteShader(vertexId);
     glDeleteShader(fragId);
 }
+
 int NdkShader::compileShader(AAssetManager*  pManager,const char* fName, GLint sType)
 {
     AAsset* file = AAssetManager_open(pManager,fName, AASSET_MODE_BUFFER);
@@ -59,9 +60,9 @@ int NdkShader::compileShader(AAssetManager*  pManager,const char* fName, GLint s
     char* sContentBuff = (char*)malloc(shaderSize);
     AAsset_read(file, sContentBuff, shaderSize);
     LOGD("SHADERS: %s",sContentBuff);
-    unsigned int   shaderID = 0;
-    char           message[512]={0};
-    int            status = 0;
+    unsigned int shaderID = 0;
+    char         message[512] = {0};
+    int          status = 0;
 
     shaderID = glCreateShader(sType);
     glShaderSource(shaderID, 1, &sContentBuff, (const GLint *)&shaderSize);
@@ -129,4 +130,18 @@ void NdkShader::setAttributeBuffer(const char* name, GLenum type, const void *va
 {
     GLuint location = glGetAttribLocation(m_shaderProgram, name);
     glVertexAttribPointer(location,tupleSize,type,GL_FALSE,stride,values);
+}
+
+void NdkShader::enableAttributeArray(int location) {
+    glEnableVertexAttribArray(location);
+}
+
+void NdkShader::disableAttributeArray(int location)
+{
+    glDisableVertexAttribArray(location);
+}
+
+void NdkShader::setAttributeBuffer(int location, GLenum type, const void *values, int tupleSize, int stride )
+{
+    glVertexAttribPointer(location,tupleSize, type,GL_FALSE, stride,values);
 }
