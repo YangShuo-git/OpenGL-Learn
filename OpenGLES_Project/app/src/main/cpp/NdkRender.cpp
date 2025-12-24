@@ -30,7 +30,8 @@ void NdkRender::init() {
         loadShaderResources(m_pAssetManager);
     }
 
-    setupDrawingRect();
+//    setupDrawingRect();
+    setupDrawingObj();
 
     // 2.0的使用方式
 #if 0
@@ -59,8 +60,9 @@ void NdkRender::init() {
 
 void NdkRender::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // drawTriangle3();
-    drawRect();
+//    drawTriangle3();
+//    drawRect();
+    drawObj();
 
     // 2.0的使用方式
 #if 0
@@ -94,12 +96,118 @@ void NdkRender::setAssetManager(AAssetManager *pManager) {
 }
 
 void NdkRender::loadTextureResources(AAssetManager *pManager) {
-    NdkTexture glTexture;
-    m_texID[0] = glTexture.createTextureFromFile(pManager, "earth.png");
+    for(int i=0; i<6; i++){
+        char nameBuff[10];
+        memset(nameBuff,0,sizeof(nameBuff));
+        snprintf(nameBuff, sizeof(nameBuff), "earth.png");
+        nameBuff[9]='\0';
+        LOGI("Image Name:%s",nameBuff);
+        NdkTexture glTexture;
+        m_texID[i] = glTexture.createTextureFromFile(pManager,nameBuff);
+    }
 }
 
 void NdkRender::loadShaderResources(AAssetManager *pManager) {
-    m_pShader->initShadersFromFile(pManager, "vertex.glsl", "fragment.glsl");
+    m_pShader->initShadersFromFile(pManager, "cube_vert.glsl", "cube_frag.glsl");
+//    m_pShader->initShadersFromFile(pManager, "vertex.glsl", "fragment.glsl");
+}
+
+void NdkRender::setupDrawingObj() {
+    if(m_pShader == NULL){
+        return;
+    }
+
+    const PriFloat5 cubeVertexs[]  = {
+        {-1.0,-1.0, 1.0 ,  0.0, 0.0 },
+        {-1.0, 1.0, 1.0 ,  0.0, 1.0 },
+        {1.0, -1.0,  1.0 , 1.0, 0.0 },
+        {1.0, 1.0, 1.0 ,  1.0, 1.0 },
+
+        {1.0,-1.0, -1.0,   0,  0  },
+        {1.0, 1.0, -1.0,   0,  1  },
+        {-1.0,-1.0, -1.0,   1,  0 },
+        {-1.0, 1.0, -1.0,   1,  1 },
+
+        {-1.0, -1.0, -1.0,  0,  0 },
+        {-1.0, 1.0, -1.0,   0,  1 },
+        {-1.0, -1.0,  1.0,  1,  0 },
+        {-1.0, 1.0, 1.0,    1,  1 },
+
+        {1.0,-1.0,  1.0,    0,  0 },
+        {1.0, 1.0,  1.0,    0,  1 },
+        {1.0, -1.0,  -1.0,  1,  0 },
+        {1.0, 1.0, -1.0,    1,  1 },
+
+        {-1.0, 1.0,  1.0,   0,  0 },
+        {-1.0, 1.0,  -1.0,  0,  1 },
+        {1.0, 1.0, 1.0,     1,  0 },
+        {1.0, 1.0, -1.0,    1,  1 },
+
+        {-1.0, -1.0, -1.0,  0,  0 },
+        {-1.0, -1.0, 1.0,   0,  1 },
+        {1.0, -1.0, -1.0,   1,  0 },
+        {1.0, -1.0, 1.0,    1,  1 }
+    };
+
+    const short cubeIndexs[]= {
+        0, 1, 2,  2, 1, 3,
+        4, 5, 6,  6, 5, 7,
+        8, 9, 10, 10, 9,11,
+        12,13,14, 14,13,15,
+        16,17,18, 18,17,19,
+        20,21,22, 22,21,23,
+    };
+
+    m_pVAO->create();
+    m_pVAO->bind();
+
+    m_pVBO->create();
+    m_pVBO->bind();
+    m_pVBO->setBufferData(cubeVertexs,sizeof(cubeVertexs));
+
+    m_pEBO->create();
+    m_pEBO->bind();
+    m_pEBO->setBufferData(cubeIndexs,sizeof(cubeIndexs));
+
+    int offset = 0;
+    m_pShader->setAttributeBuffer(0,GL_FLOAT, (void *)offset, 3, sizeof(PriFloat5));
+    m_pShader->enableAttributeArray(0);
+
+    offset += 3 * sizeof(float);
+    m_pShader->setAttributeBuffer(1,GL_FLOAT, (void *)offset, 2, sizeof(PriFloat5));
+    m_pShader->enableAttributeArray(1);
+
+    m_pVAO->release();
+    m_pVBO->release();
+    m_pEBO->release();
+}
+
+void NdkRender::drawObj() {
+    m_angle += 0.01f;
+
+    glm::mat4x4  objectMat;
+    glm::mat4x4  objectTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3));
+    glm::mat4x4  objectRotMat = glm::rotate(glm::mat4(1.0f),m_angle,glm::vec3(1.0f, 1.0f, 1.0) );
+    glm::mat4x4  objectScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(0.5f, 0.5f, 0.5f) );
+
+    glm::mat4 projMat = glm::perspective(glm::radians(60.0f), (float)9/(float)18, 0.1f, 1000.0f);
+    objectMat = projMat* objectTransMat * objectScaleMat* objectRotMat ;
+
+    m_pShader->bind();
+    m_pShader->setUniformValue("u_mat",objectMat);
+
+    m_pVAO->bind();
+
+    for(int i=0; i<6; i++){
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,m_texID[i]);
+        int offset = i * 6 * sizeof(unsigned short);
+        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,(void *)offset);
+        glBindTexture(GL_TEXTURE_2D,0);
+    }
+
+    m_pShader->release();
+    m_pVAO->release();
 }
 
 void NdkRender::setupDrawingRect() {
