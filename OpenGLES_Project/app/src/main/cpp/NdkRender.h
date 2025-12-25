@@ -35,14 +35,19 @@ public:
     void setupDrawingRect();
     void drawRect();
 
-    void setupDrawingObj();
-    void drawObj();
+    void setupDrawingCube();
+    void drawCube();
+
+    void setupDrawingTransition();
+    void drawTransition();
+
 
 private:
     void loadTextureResources(AAssetManager *pManager);
     void loadShaderResources(AAssetManager *pManager);
 
 private:
+    float m_nValue = 0.0f;
     float m_angle = 0.0f;
     GLuint m_texID[6];
 
@@ -55,6 +60,5 @@ private:
 
     NdkShader* m_pShader;
 };
-
 
 #endif //OPENGLES_PROJECT_NDKRENDER_H

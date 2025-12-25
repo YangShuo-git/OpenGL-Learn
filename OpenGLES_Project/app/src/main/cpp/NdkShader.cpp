@@ -3,10 +3,6 @@
 //
 
 #define LOG_TAG "NdkShader"
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 
 #include "NdkShader.h"
 
