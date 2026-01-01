@@ -22,9 +22,9 @@ public:
     void enableAttributeArray(const char *name);
     void setAttributeBuffer(const char* name, GLenum type, const void *values, int tupleSize, int stride = 0);
 
+    void setAttributeBuffer(int location,GLenum type, const void *values, int tupleSize, int stride = 0);
     void disableAttributeArray(int location);
     void enableAttributeArray(int location);
-    void setAttributeBuffer(int location,GLenum type, const void *values, int tupleSize, int stride = 0);
 
     void setUniformValue(const char* name, int iValue);
     void setUniformValue(const char* name, GLfloat fValue);

@@ -151,12 +151,10 @@ void NdkRender::setupDrawingTransition() {
     m_pEBO->setBufferData(planeIndexs,sizeof(planeIndexs));
 
     int offset = 0;
-
     m_pShader->setAttributeBuffer(0,GL_FLOAT, (void *)offset, 3, sizeof(PriFloat5));
     m_pShader->enableAttributeArray(0);
 
     offset += 3 * sizeof(float);
-
     m_pShader->setAttributeBuffer(1,GL_FLOAT, (void *)offset, 2, sizeof(PriFloat5));
     m_pShader->enableAttributeArray(1);
 

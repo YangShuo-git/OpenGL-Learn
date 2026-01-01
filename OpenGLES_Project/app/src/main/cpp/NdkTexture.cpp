@@ -36,7 +36,7 @@ GLuint NdkTexture::createTextureFromFile(AAssetManager *assetManager, const char
     }
     memset(imgBuff, 0, bufferSize + 1);
     int readLen = AAsset_read(asset, imgBuff, bufferSize);
-    LOGD("Picture read: %d", readLen);
+    LOGI("Picture read: %d", readLen);
 
     ImageReader* pImageReader = new ImageReader();
     pImageReader->readFromBuffer(imgBuff,readLen);
@@ -69,7 +69,8 @@ GLuint NdkTexture::createOpenGLTexture(ImageReader *pImgReader) {
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    //将图片数据就从的CPU传输到了GPU的显存中，可以根据当前的纹理索引来处理图片数据
+    //1、通过ImgReader获取图片数据
+    //2、将图片数据就从的CPU传输到了GPU的显存中，可以根据当前的纹理索引来处理图片数据
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,
                  pImgReader->getWidth(),pImgReader->getHeight(),0,
                  GL_RGBA,GL_UNSIGNED_BYTE,pImgReader->getData());

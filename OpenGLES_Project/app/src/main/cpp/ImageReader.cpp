@@ -58,23 +58,21 @@ void ImageReader::readFromFile(unsigned char *fileName) {
 }
 
 void ImageReader::readFromBuffer(uchar *dataBuff, int length) {
-    int			type = 0;
-    int			width = 0;
-    int			height = 0;
+    int	type = 0;
+    int	width = 0;
+    int	height = 0;
 
     stbi_set_flip_vertically_on_load(true);
 
     uchar* picData = stbi_load_from_memory((uchar const *)dataBuff, length, &width, &height, &type, 0);
-
     int imgSize = width * height * 4;
 
     if(imgSize >0 && picData != nullptr){
-
         m_pImgData =(uchar*) malloc(imgSize);
         memcpy(m_pImgData,picData,imgSize);
 
-        m_width =width;
-        m_height =height;
+        m_width = width;
+        m_height = height;
         m_type = type;
     }
 

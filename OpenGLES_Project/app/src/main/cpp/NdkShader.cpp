@@ -79,7 +79,6 @@ int NdkShader::compileShader(AAssetManager*  pManager,const char* fName, GLint s
     return shaderID;
 }
 
-
 void NdkShader::bind()
 {
     glUseProgram(m_shaderProgram);
@@ -128,16 +127,17 @@ void NdkShader::setAttributeBuffer(const char* name, GLenum type, const void *va
     glVertexAttribPointer(location,tupleSize,type,GL_FALSE,stride,values);
 }
 
-void NdkShader::enableAttributeArray(int location) {
+void NdkShader::setAttributeBuffer(int location, GLenum type, const void *values, int tupleSize, int stride )
+{
+    glVertexAttribPointer(location,tupleSize, type,GL_FALSE, stride,values);
+}
+
+void NdkShader::enableAttributeArray(int location)
+{
     glEnableVertexAttribArray(location);
 }
 
 void NdkShader::disableAttributeArray(int location)
 {
     glDisableVertexAttribArray(location);
-}
-
-void NdkShader::setAttributeBuffer(int location, GLenum type, const void *values, int tupleSize, int stride )
-{
-    glVertexAttribPointer(location,tupleSize, type,GL_FALSE, stride,values);
 }
