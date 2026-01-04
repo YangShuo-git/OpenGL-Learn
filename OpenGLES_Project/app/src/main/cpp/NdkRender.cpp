@@ -100,6 +100,7 @@ void NdkRender::setAssetManager(AAssetManager *pManager) {
 }
 
 void NdkRender::loadTextureResources(AAssetManager *pManager) {
+    //初始化纹理
     const std::vector<std::string> imageFiles = {
             "earth.png",
             "mars.png",
@@ -116,6 +117,7 @@ void NdkRender::loadTextureResources(AAssetManager *pManager) {
 }
 
 void NdkRender::loadShaderResources(AAssetManager *pManager) {
+    //初始化shader
     m_pShader->initShadersFromFile(pManager,"transition_vert.glsl","transition_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager, "cube_vert.glsl", "cube_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager, "vertex.glsl", "fragment.glsl");
@@ -181,13 +183,14 @@ void NdkRender::drawTransition() {
 
     m_pShader->bind();
 
+    //设置mvp矩阵
     m_pShader->setUniformValue("u_mat",objectMat);
     m_pShader->setUniformValue("uValue",m_nValue);
 
+    //设置纹理
     m_pShader->setUniformValue("utexture0",0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D,m_texID[0]);
-
     m_pShader->setUniformValue("utexture1",1);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D,m_texID[1]);
