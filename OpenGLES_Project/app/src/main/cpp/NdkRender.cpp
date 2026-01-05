@@ -34,7 +34,7 @@ void NdkRender::init() {
     }
 
 //    setupDrawingCube();
-    setupDrawingTransition();
+    setupDrawingEffect();
 
     // 2.0的使用方式
 #if 0
@@ -66,7 +66,8 @@ void NdkRender::draw() {
 //    drawTriangle3();
 //    drawRect();
 //    drawCube();
-    drawTransition();
+//    drawTransition();
+    drawBurn();
 
     // 2.0的使用方式
 #if 0
@@ -118,13 +119,14 @@ void NdkRender::loadTextureResources(AAssetManager *pManager) {
 
 void NdkRender::loadShaderResources(AAssetManager *pManager) {
     //初始化shader
-    m_pShader->initShadersFromFile(pManager,"transition_vert.glsl","transition_frag.glsl");
+    m_pShader->initShadersFromFile(pManager,"burn_vert.glsl","burn_frag.glsl");
+//    m_pShader->initShadersFromFile(pManager,"transition_vert.glsl","transition_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager, "cube_vert.glsl", "cube_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager, "vertex.glsl", "fragment.glsl");
 }
 
 
-void NdkRender::setupDrawingTransition() {
+void NdkRender::setupDrawingEffect() {
     if(m_pShader == NULL){
         return;
     }
@@ -163,6 +165,35 @@ void NdkRender::setupDrawingTransition() {
     m_pVAO->release();
     m_pVBO->release();
     m_pEBO->release();
+}
+
+void NdkRender::drawBurn() {
+    m_nValue += 0.01f;
+    m_angle += 0.01f;
+
+    glm::mat4x4 objectMat;
+    glm::mat4x4 objectTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3));
+    glm::mat4x4 objectRotMat = glm::rotate(glm::mat4(1.0f),m_angle,glm::vec3(1.0f, 1.0f, 1.0) );
+    glm::mat4x4 objectScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 1.0f, 1.0) );
+
+    glm::mat4 projMat = glm::perspective(glm::radians(60.0f), (float)9/(float)18, 0.1f, 1000.0f);
+    objectMat = projMat* objectTransMat ;
+
+    m_pShader->bind();
+    m_pShader->setUniformValue("u_mat",objectMat);
+    m_pShader->setUniformValue("uValue",m_nValue);
+
+    m_pShader->setUniformValue("utexture0",0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D,m_texID[0]);
+
+    m_pVAO->bind();
+    glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,NULL);
+
+    m_pShader->release();
+    m_pVAO->release();
+
+    glBindTexture(GL_TEXTURE_2D,0);
 }
 
 void NdkRender::drawTransition() {

@@ -99,6 +99,11 @@ void NdkShader::setUniformValue(const char* name, GLfloat fValue)
     glUniform1f(glGetUniformLocation(m_shaderProgram, name), fValue);
 }
 
+void NdkShader::setUniformValue(const char* name, glm::vec2 vec2Value)
+{
+    glUniform2fv(glGetUniformLocation(m_shaderProgram, name), 1, (const GLfloat *)glm::value_ptr(vec2Value));
+}
+
 void NdkShader::setUniformValue(const char* name, glm::vec3 vecValue)
 {
     glUniform3fv(glGetUniformLocation(m_shaderProgram, name), 1, glm::value_ptr(vecValue));

@@ -38,8 +38,9 @@ public:
     void setupDrawingCube();
     void drawCube();
 
-    void setupDrawingTransition();
+    void setupDrawingEffect();
     void drawTransition();
+    void drawBurn();
 
 
 private:

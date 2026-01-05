@@ -28,6 +28,7 @@ public:
 
     void setUniformValue(const char* name, int iValue);
     void setUniformValue(const char* name, GLfloat fValue);
+    void setUniformValue(const char* name, glm::vec2 vecValue);
     void setUniformValue(const char* name, glm::vec3 vecValue);
     void setUniformValue(const char* name, glm::mat4 matValue);
 
