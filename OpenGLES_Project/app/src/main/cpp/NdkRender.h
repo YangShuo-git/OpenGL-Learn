@@ -41,6 +41,7 @@ public:
     void setupDrawingEffect();
     void drawTransition();
     void drawBurn();
+    void drawFade();
 
 
 private:

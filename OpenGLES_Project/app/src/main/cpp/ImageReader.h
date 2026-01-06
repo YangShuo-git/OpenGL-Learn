@@ -12,6 +12,7 @@
 #define uchar unsigned char
 #endif
 
+// rename ImageLoader
 class ImageReader
 {
 public:
