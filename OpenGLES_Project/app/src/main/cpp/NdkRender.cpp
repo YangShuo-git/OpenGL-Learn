@@ -120,7 +120,8 @@ void NdkRender::loadTextureResources(AAssetManager *pManager) {
 
 void NdkRender::loadShaderResources(AAssetManager *pManager) {
     //初始化shader
-    m_pShader->initShadersFromFile(pManager,"ripple_vert.glsl","ripple_frag.glsl");
+    m_pShader->initShadersFromFile(pManager,"mosaic_vert.glsl","mosaic_frag.glsl");
+//    m_pShader->initShadersFromFile(pManager,"ripple_vert.glsl","ripple_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"fade_vert.glsl","fade_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"burn_vert.glsl","burn_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"transition_vert.glsl","transition_frag.glsl");
