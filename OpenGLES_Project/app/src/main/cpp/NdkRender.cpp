@@ -120,7 +120,8 @@ void NdkRender::loadTextureResources(AAssetManager *pManager) {
 
 void NdkRender::loadShaderResources(AAssetManager *pManager) {
     //初始化shader
-    m_pShader->initShadersFromFile(pManager,"fade_vert.glsl","fade_frag.glsl");
+    m_pShader->initShadersFromFile(pManager,"ripple_vert.glsl","ripple_frag.glsl");
+//    m_pShader->initShadersFromFile(pManager,"fade_vert.glsl","fade_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"burn_vert.glsl","burn_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"transition_vert.glsl","transition_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager, "cube_vert.glsl", "cube_frag.glsl");
@@ -150,7 +151,6 @@ void NdkRender::setupDrawingEffect() {
     m_pVBO->create();
     m_pVBO->bind();
     m_pVBO->setBufferData(planeVertexs,sizeof(planeVertexs));
-
 
     m_pEBO->create();
     m_pEBO->bind();
@@ -202,7 +202,6 @@ void NdkRender::drawFade() {
 
     m_pVAO->bind();
     glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,NULL);
-
 
     m_pShader->release();
     m_pVAO->release();
