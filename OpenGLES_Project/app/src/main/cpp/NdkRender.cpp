@@ -67,8 +67,7 @@ void NdkRender::draw() {
 //    drawRect();
 //    drawCube();
 //    drawTransition();
-//    drawBurn();
-    drawFade();
+    drawEffect();
 
     // 2.0的使用方式
 #if 0
@@ -120,12 +119,12 @@ void NdkRender::loadTextureResources(AAssetManager *pManager) {
 
 void NdkRender::loadShaderResources(AAssetManager *pManager) {
     //初始化
-    m_pShader->initShadersFromFile(pManager,"highlight_vert.glsl","highlight_frag.glsl");
+//    m_pShader->initShadersFromFile(pManager,"highlight_vert.glsl","highlight_frag.glsl");
 
 //    m_pShader->initShadersFromFile(pManager,"mosaic_vert.glsl","mosaic_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"ripple_vert.glsl","ripple_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"fade_vert.glsl","fade_frag.glsl");
-//    m_pShader->initShadersFromFile(pManager,"burn_vert.glsl","burn_frag.glsl");
+    m_pShader->initShadersFromFile(pManager,"burn_vert.glsl","burn_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"transition_vert.glsl","transition_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager, "cube_vert.glsl", "cube_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager, "vertex.glsl", "fragment.glsl");
@@ -172,7 +171,7 @@ void NdkRender::setupDrawingEffect() {
     m_pEBO->release();
 }
 
-void NdkRender::drawFade() {
+void NdkRender::drawEffect() {
     m_nValue += 0.01f;
     m_angle  += 0.01f;
 
@@ -189,6 +188,7 @@ void NdkRender::drawFade() {
     m_pShader->setUniformValue("u_mat",objectMat);
     m_pShader->setUniformValue("iTime",m_nValue);
 
+    //burn ripple fade等的shader没有该变量,但是仍然可以运行
     m_pShader->setUniformValue("iResolution",glm::vec2(1.0f,1.0f));
 
     m_pShader->setUniformValue("iChannel0",0);
@@ -208,35 +208,6 @@ void NdkRender::drawFade() {
 
     m_pShader->release();
     m_pVAO->release();
-    glBindTexture(GL_TEXTURE_2D,0);
-}
-
-void NdkRender::drawBurn() {
-    m_nValue += 0.01f;
-    m_angle += 0.01f;
-
-    glm::mat4x4 objectMat;
-    glm::mat4x4 objectTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3));
-    glm::mat4x4 objectRotMat = glm::rotate(glm::mat4(1.0f),m_angle,glm::vec3(1.0f, 1.0f, 1.0) );
-    glm::mat4x4 objectScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 1.0f, 1.0) );
-
-    glm::mat4 projMat = glm::perspective(glm::radians(60.0f), (float)9/(float)18, 0.1f, 1000.0f);
-    objectMat = projMat* objectTransMat ;
-
-    m_pShader->bind();
-    m_pShader->setUniformValue("u_mat",objectMat);
-    m_pShader->setUniformValue("uValue",m_nValue);
-
-    m_pShader->setUniformValue("utexture0",0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D,m_texID[0]);
-
-    m_pVAO->bind();
-    glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,NULL);
-
-    m_pShader->release();
-    m_pVAO->release();
-
     glBindTexture(GL_TEXTURE_2D,0);
 }
 

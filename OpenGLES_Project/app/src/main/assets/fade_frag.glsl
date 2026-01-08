@@ -2,7 +2,6 @@
 precision mediump float;
 
 uniform float iTime;
-
 uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
 

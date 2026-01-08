@@ -1,20 +1,21 @@
 #version 300 es
 precision mediump float;
 
-uniform float uValue;
-uniform sampler2D utexture0;
+uniform float iTime;
+uniform sampler2D iChannel0;
+uniform sampler2D iChannel1;
 
 in  vec2 fragCoord;
 out vec4 fragColor;
 
 vec3 TextureSource(vec2 uv)
 {
-    return texture(utexture0, fragCoord).rgb;
+    return texture(iChannel0, fragCoord).rgb;
 }
 
 vec3 TextureTarget(vec2 uv)
 {
-    return texture(utexture0, fragCoord).rrr;
+    return texture(iChannel0, fragCoord).rrr;
 }
 
 float Hash( vec2 p)
@@ -52,7 +53,7 @@ void main(void)
     vec3 col = src;
 
     uv.x -= 1.5;
-    float ctime = mod(uValue*.5,2.5);
+    float ctime = mod(iTime*.5,2.5);
 
     float d = uv.x+uv.y*0.5 + 0.5*fbm(uv*15.1) + ctime*1.3;
     if (d >0.35) col = clamp(col-(d-0.35)*10.,0.0,1.0);

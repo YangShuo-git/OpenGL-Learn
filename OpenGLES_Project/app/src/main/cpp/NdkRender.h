@@ -40,8 +40,7 @@ public:
 
     void setupDrawingEffect();
     void drawTransition();
-    void drawBurn();
-    void drawFade();
+    void drawEffect();
 
 
 private:
