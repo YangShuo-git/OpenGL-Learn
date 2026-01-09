@@ -2,8 +2,8 @@
 // Created by BaiYang on 2025-11-29.
 //
 
-#ifndef OPENGLES_PROJECT_IMAGEREADER_H
-#define OPENGLES_PROJECT_IMAGEREADER_H
+#ifndef OPENGLES_PROJECT_IMAGELOADER_H
+#define OPENGLES_PROJECT_IMAGELOADER_H
 
 #include <stdlib.h>
 #include <string.h>
@@ -12,12 +12,11 @@
 #define uchar unsigned char
 #endif
 
-// rename ImageLoader
-class ImageReader
+class Imageloader
 {
 public:
-    ImageReader();
-    ~ImageReader();
+    Imageloader();
+    ~Imageloader();
 
     int getWidth() const;
     int getHeight() const;
@@ -34,4 +33,4 @@ private:
     uchar* m_pImgData;
 };
 
-#endif //OPENGLES_PROJECT_IMAGEREADER_H
+#endif //OPENGLES_PROJECT_IMAGELOADER_H

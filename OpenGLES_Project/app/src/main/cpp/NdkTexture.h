@@ -6,7 +6,7 @@
 #define OPENGLES_PROJECT_NDKTEXTURE_H
 
 #include "CommonDef.h"
-#include "ImageReader.h"
+#include "Imageloader.h"
 
 class NdkTexture {
 public:
@@ -18,7 +18,7 @@ public:
 
 private:
     GLuint  generateTexture(AAssetManager *assetManager, const char* fileName);
-    GLuint  createOpenGLTexture(ImageReader* pImgReader);
+    GLuint  createOpenGLTexture(Imageloader* pImgLoader);
 
 private:
     GLuint m_texID;

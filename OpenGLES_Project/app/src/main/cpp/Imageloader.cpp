@@ -2,7 +2,7 @@
 // Created by BaiYang on 2025-11-30.
 //
 
-#include "ImageReader.h"
+#include "Imageloader.h"
 
 #define STB_IMAGE_IMPLEMENTATION //必须在stb_image.h之前
 extern "C"{
@@ -10,33 +10,33 @@ extern "C"{
 }
 
 
-ImageReader::ImageReader():m_width(0),m_height(0),m_type(0),m_pImgData(nullptr){
+Imageloader::Imageloader(): m_width(0), m_height(0), m_type(0), m_pImgData(nullptr){
 
 }
 
-ImageReader::~ImageReader() {
+Imageloader::~Imageloader() {
     if(m_pImgData) {
         free(m_pImgData);
     }
 }
 
-int ImageReader::getWidth() const {
+int Imageloader::getWidth() const {
     return m_width;
 }
 
-int ImageReader::getHeight() const {
+int Imageloader::getHeight() const {
     return m_height;
 }
 
-int ImageReader::getType() const {
+int Imageloader::getType() const {
     return m_type;
 }
 
-uchar *ImageReader::getData() const {
+uchar *Imageloader::getData() const {
     return m_pImgData;
 }
 
-void ImageReader::readFromFile(unsigned char *fileName) {
+void Imageloader::readFromFile(unsigned char *fileName) {
     int			type = 0;
     int			width = 0;
     int			height = 0;
@@ -57,7 +57,7 @@ void ImageReader::readFromFile(unsigned char *fileName) {
     stbi_image_free(picData);
 }
 
-void ImageReader::readFromBuffer(uchar *dataBuff, int length) {
+void Imageloader::readFromBuffer(uchar *dataBuff, int length) {
     int	type = 0;
     int	width = 0;
     int	height = 0;
