@@ -19,7 +19,7 @@ NdkFBO::~NdkFBO()
     glDeleteTextures(1,&m_textureId);
 }
 
-void NdkFBO::createWithSize(int width, int height)
+void NdkFBO::create(int width, int height)
 {
     glGenTextures(1,&m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
@@ -27,15 +27,14 @@ void NdkFBO::createWithSize(int width, int height)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,width,height,0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,width,height,0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glBindTexture(GL_TEXTURE_2D,0);
 
     glGenRenderbuffers(1, &m_renderBufferId);
     glBindRenderbuffer(GL_RENDERBUFFER, m_renderBufferId);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width,height);
     glBindRenderbuffer(GL_RENDERBUFFER,0);
-
 
     glGenFramebuffers(1, &m_fboId);
     glBindFramebuffer(GL_FRAMEBUFFER, m_fboId);
@@ -44,9 +43,9 @@ void NdkFBO::createWithSize(int width, int height)
 
     GLenum status = glCheckFramebufferStatus( GL_FRAMEBUFFER);
     if(status == GL_FRAMEBUFFER_COMPLETE) {
-        LOGD("Framebuffer creation successful\n");
+        LOGD("Framebuffer creation successful");
     } else {
-        LOGF("Error creating framebuffer [status: %d]\n", status);
+        LOGF("Error creating framebuffer [status: %d]", status);
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER,0);

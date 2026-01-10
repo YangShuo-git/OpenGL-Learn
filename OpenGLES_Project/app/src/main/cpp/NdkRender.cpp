@@ -12,6 +12,8 @@ NdkRender::NdkRender():m_pAssetManager(nullptr) {
     m_pVBO = new NdkBuffer(NdkBuffer::VertexBuffer,NdkBuffer::StaticDraw);
     m_pEBO = new NdkBuffer(NdkBuffer::IndexBuffer,NdkBuffer::StaticDraw);
 
+    m_pFBO = new NdkFBO();
+
     m_pShader = new NdkShader();
 }
 
@@ -34,7 +36,8 @@ void NdkRender::init() {
     }
 
 //    setupDrawingCube();
-    setupDrawingEffect();
+//    setupDrawingEffect();
+    setupFBO();
 
     // 2.0的使用方式
 #if 0
@@ -63,11 +66,15 @@ void NdkRender::init() {
 
 void NdkRender::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    drawTriangle3();
+//    drawTriangleByShader();
 //    drawRect();
 //    drawCube();
 //    drawTransition();
-    drawEffect();
+//    drawEffect();
+
+    m_pFBO->bind();
+    drawTriangleByShader();
+    m_pFBO->release();
 
     // 2.0的使用方式
 #if 0
@@ -121,14 +128,26 @@ void NdkRender::loadShaderResources(AAssetManager *pManager) {
 //    m_pShader->initShadersFromFile(pManager,"highlight_vert.glsl","highlight_frag.glsl");
 
 //    m_pShader->initShadersFromFile(pManager,"mosaic_vert.glsl","mosaic_frag.glsl");
-    m_pShader->initShadersFromFile(pManager,"ripple_vert.glsl","ripple_frag.glsl");
+//    m_pShader->initShadersFromFile(pManager,"ripple_vert.glsl","ripple_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"fade_vert.glsl","fade_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"burn_vert.glsl","burn_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"transition_vert.glsl","transition_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager, "cube_vert.glsl", "cube_frag.glsl");
-//    m_pShader->initShadersFromFile(pManager, "vertex.glsl", "fragment.glsl");
+    m_pShader->initShadersFromFile(pManager, "vertex.glsl", "fragment.glsl");
 }
 
+void NdkRender::setupFBO() {
+    int viewport[4] = {0};
+    // 获取手机宽高
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    int width = viewport[2];
+    int height = viewport[3];
+
+    LOGD("viewport: %d, %d", viewport[2],viewport[3]);
+    if (width>0 && height>0) {
+        m_pFBO->create(width, height);
+    }
+}
 
 void NdkRender::setupDrawingEffect() {
     if(m_pShader == NULL){
@@ -338,8 +357,10 @@ void NdkRender::drawCube() {
     for(int i=0; i<6; i++){
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,m_texID[i]);
+
         int offset = i * 6 * sizeof(unsigned short);
         glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,(void *)offset);
+
         glBindTexture(GL_TEXTURE_2D,0);
     }
 
@@ -408,7 +429,7 @@ void NdkRender::drawRect() {
     m_pVAO->release();
 }
 
-void NdkRender::drawTriangle3() {
+void NdkRender::drawTriangleByShader() {
     PriFloat7 triangleVert[] ={
         {0,       0.5,    -1,  1,  0,  0,1.0},
         {-0.5,   -0.5,    -1,  0,  1,  0,1.0},
@@ -426,12 +447,11 @@ void NdkRender::drawTriangle3() {
     cubeMat = projMat* cubeTransMat ;
 
     m_pShader->bind();
-
     m_pShader->setUniformValue("u_mat", cubeMat);
 
+    // 每次draw之前，都要将顶点数据从cpu拷贝到gpu，浪费性能（可以使用VBO进行改进）
     m_pShader->enableAttributeArray("a_position");
     m_pShader->enableAttributeArray("a_color");
-
     m_pShader->setAttributeBuffer("a_position",GL_FLOAT,triangleVert,3,sizeof(PriFloat7));
     m_pShader->setAttributeBuffer("a_color",GL_FLOAT,&triangleVert[0].r,4,sizeof(PriFloat7));
 

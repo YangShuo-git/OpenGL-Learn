@@ -12,7 +12,7 @@ public:
     NdkFBO();
     ~NdkFBO();
 
-    void createWithSize(int width, int height);
+    void create(int width, int height);
     void bind();
     void release();
 

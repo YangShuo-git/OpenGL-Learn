@@ -30,7 +30,7 @@ public:
     void drawLine();
     void drawPicture();
 
-    void drawTriangle3();
+    void drawTriangleByShader();
 
     void setupDrawingRect();
     void drawRect();
@@ -41,6 +41,8 @@ public:
     void setupDrawingEffect();
     void drawTransition();
     void drawEffect();
+
+    void setupFBO();
 
 
 private:
