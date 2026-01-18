@@ -12,6 +12,8 @@
 #define uchar unsigned char
 #endif
 
+#include "Log.h"
+
 class Imageloader
 {
 public:

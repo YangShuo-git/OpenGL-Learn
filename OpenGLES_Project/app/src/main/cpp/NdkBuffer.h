@@ -39,9 +39,9 @@ public:
     void setBufferData(const GLvoid *data, GLsizeiptr size);
 
 private:
-    GLuint              m_buffID;
-    GLsizeiptr          m_buffSize;
-    NdkBuffer::Type     m_bufferType;
+    GLuint           m_buffID;
+    GLsizeiptr       m_buffSize;
+    NdkBuffer::Type  m_bufferType;
     NdkBuffer::UsagePattern  m_usage;
 };
 

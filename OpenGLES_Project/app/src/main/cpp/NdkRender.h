@@ -44,6 +44,10 @@ public:
 
     void setupFBO();
 
+    void setupDrawingWithFBO();
+    void drawToFBO();
+    void setupDrawingScreen();
+    void drawToScreen();
 
 private:
     void loadTextureResources(AAssetManager *pManager);
@@ -62,6 +66,11 @@ private:
     NdkFBO*    m_pFBO;
 
     NdkShader* m_pShader;
+
+    NdkShader* m_fboShader;
+    NdkVAO*    m_pFVAO;
+    NdkBuffer* m_pFVBO;
+    NdkBuffer* m_pFEBO;
 };
 
 #endif //OPENGLES_PROJECT_NDKRENDER_H

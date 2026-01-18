@@ -67,6 +67,7 @@ void Imageloader::readFromBuffer(uchar *dataBuff, int length) {
     uchar* picData = stbi_load_from_memory((uchar const *)dataBuff, length, &width, &height, &type, 0);
     int imgSize = width * height * 4;
 
+    LOGI("readFromBuffer: %d, %d, %d", width, height, type);
     if(imgSize >0 && picData != nullptr){
         m_pImgData =(uchar*) malloc(imgSize);
         memcpy(m_pImgData,picData,imgSize);

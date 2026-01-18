@@ -16,12 +16,12 @@ public:
     void bind();
     void release();
 
-    GLuint getTextureID();
+    GLuint getTextureId();
 
 private:
     GLuint m_fboId;
     GLuint m_renderBufferId;
-    GLuint m_textureId;
+    GLuint m_colorTxtureId;
 };
 
 

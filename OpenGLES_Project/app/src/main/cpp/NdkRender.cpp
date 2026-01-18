@@ -12,9 +12,13 @@ NdkRender::NdkRender():m_pAssetManager(nullptr) {
     m_pVBO = new NdkBuffer(NdkBuffer::VertexBuffer,NdkBuffer::StaticDraw);
     m_pEBO = new NdkBuffer(NdkBuffer::IndexBuffer,NdkBuffer::StaticDraw);
 
-    m_pFBO = new NdkFBO();
-
     m_pShader = new NdkShader();
+
+    m_pFBO  = new NdkFBO();
+    m_pFVAO = new NdkVAO();
+    m_pFVBO = new NdkBuffer(NdkBuffer::VertexBuffer,NdkBuffer::StaticDraw);
+    m_pFEBO = new NdkBuffer(NdkBuffer::IndexBuffer,NdkBuffer::StaticDraw);
+    m_fboShader = new NdkShader();
 }
 
 NdkRender::~NdkRender() {
@@ -22,6 +26,9 @@ NdkRender::~NdkRender() {
 
     safeDeletePtr(m_pVBO);
     safeDeletePtr(m_pEBO);
+
+    safeDeletePtr(m_pFVBO);
+    safeDeletePtr(m_pFEBO);
 }
 
 void NdkRender::init() {
@@ -37,10 +44,12 @@ void NdkRender::init() {
 
 //    setupDrawingCube();
 //    setupDrawingEffect();
-    setupFBO();
 
-    // 2.0的使用方式
+    setupDrawingWithFBO();
+    setupDrawingScreen();
+
 #if 0
+    // 2.0的使用方式
     PriFloat5 planVertices[] = {
         { -1.0f, -1.0f, 1.0f, 0, 0 },
         { -1.0f, 1.0f, 1.0f, 0, 1 },
@@ -65,19 +74,21 @@ void NdkRender::init() {
 }
 
 void NdkRender::draw() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //    drawTriangleByShader();
 //    drawRect();
 //    drawCube();
 //    drawTransition();
 //    drawEffect();
 
-    m_pFBO->bind();
-    drawTriangleByShader();
-    m_pFBO->release();
+//    m_pFBO->bind();
+//    drawTriangleByShader();
+//    m_pFBO->release();
+    drawToFBO();
+    drawToScreen();
 
-    // 2.0的使用方式
 #if 0
+    // 2.0的使用方式
     glLoadIdentity();
 
     drawTriangle();
@@ -91,8 +102,8 @@ void NdkRender::draw() {
 void NdkRender::sizeChanged(int w, int h) {
     glViewport(0,0,w,h);
 
-    // 2.0的使用方式
 #if 0
+    // 2.0的使用方式
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
@@ -111,10 +122,10 @@ void NdkRender::loadTextureResources(AAssetManager *pManager) {
     const std::vector<std::string> imageFiles = {
         "earth.png",
         "mars.png",
-        "moon.png",
         "girl.png",
-        "lena.png",
-        "earth.png"
+        "dog.png",
+        "moon.png",
+        "leaf.png"
     };
 
     for(int i=0; i<imageFiles.size(); i++){
@@ -132,8 +143,13 @@ void NdkRender::loadShaderResources(AAssetManager *pManager) {
 //    m_pShader->initShadersFromFile(pManager,"fade_vert.glsl","fade_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"burn_vert.glsl","burn_frag.glsl");
 //    m_pShader->initShadersFromFile(pManager,"transition_vert.glsl","transition_frag.glsl");
+
+    // 为什么drawRect都可以使用这两个呢？
 //    m_pShader->initShadersFromFile(pManager, "cube_vert.glsl", "cube_frag.glsl");
-    m_pShader->initShadersFromFile(pManager, "vertex.glsl", "fragment.glsl");
+//    m_pShader->initShadersFromFile(pManager, "vertex.glsl", "fragment.glsl");
+
+    m_fboShader->initShadersFromFile(pManager, "fbo_vert.glsl", "fbo_frag.glsl");
+    m_pShader->initShadersFromFile(pManager, "cube_vert.glsl", "cube_frag.glsl");
 }
 
 void NdkRender::setupFBO() {
@@ -143,9 +159,9 @@ void NdkRender::setupFBO() {
     int width = viewport[2];
     int height = viewport[3];
 
-    LOGD("viewport: %d, %d", viewport[2],viewport[3]);
+    LOGI("FBO viewport: %d, %d", viewport[2],viewport[3]);
     if (width>0 && height>0) {
-        m_pFBO->create(width, height);
+        m_pFBO->create(900, 900);
     }
 }
 
@@ -273,6 +289,7 @@ void NdkRender::setupDrawingCube() {
         return;
     }
 
+    // 顶点坐标 + 纹理坐标
     const PriFloat5 cubeVertexs[]  = {
         {-1.0,-1.0, 1.0 ,  0.0, 0.0 },
         {-1.0, 1.0, 1.0 ,  0.0, 1.0 },
@@ -358,6 +375,7 @@ void NdkRender::drawCube() {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,m_texID[i]);
 
+        // 将纹理资源m_texID[i]绘制到对应的纹理坐标中
         int offset = i * 6 * sizeof(unsigned short);
         glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,(void *)offset);
 
@@ -369,6 +387,7 @@ void NdkRender::drawCube() {
 }
 
 void NdkRender::setupDrawingRect() {
+    // 顶点坐标 + 颜色
     PriFloat7 rectVert[] = {
         {-0.5,   -0.5,  0,  1,  0,  0,1.0},
         {-0.5,   0.5,   0,  0,  1,  0,1.0},
@@ -411,7 +430,7 @@ void NdkRender::drawRect() {
     glm::mat4x4  objectMat;
     glm::mat4x4  objectTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3));
     glm::mat4x4  objectRotMat = glm::rotate(glm::mat4(1.0f),m_angle,glm::vec3(1.0f, 1.0f, 1.0) );
-    glm::mat4x4  objectScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 1.0f, 1.0f) );
+    glm::mat4x4  objectScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(0.5f, 0.5f, 0.5f) );
 
     glm::mat4 projMat = glm::perspective(glm::radians(60.0f), (float)9/(float)18, 0.1f, 1000.0f);
     objectMat = projMat* objectTransMat * objectScaleMat* objectRotMat ;
@@ -449,7 +468,8 @@ void NdkRender::drawTriangleByShader() {
     m_pShader->bind();
     m_pShader->setUniformValue("u_mat", cubeMat);
 
-    // 每次draw之前，都要将顶点数据从cpu拷贝到gpu，浪费性能（可以使用VBO进行改进）
+    // 未使用VBO、VAO
+    // 每次draw之前，都要将顶点数据从cpu拷贝到gpu，浪费性能
     m_pShader->enableAttributeArray("a_position");
     m_pShader->enableAttributeArray("a_color");
     m_pShader->setAttributeBuffer("a_position",GL_FLOAT,triangleVert,3,sizeof(PriFloat7));
@@ -463,6 +483,146 @@ void NdkRender::drawTriangleByShader() {
     m_pShader->release();
 }
 
+void NdkRender::setupDrawingWithFBO() {
+    setupFBO();
+    if(m_fboShader == NULL){
+        return;
+    }
+
+    const PriFloat5 vertexs[]  = {
+        {-1.0,-1.0,1.0 , 0.0, 0.0 },
+        {-1.0,1.0, 1.0 , 0.0, 1.0 },
+        {1.0, -1.0,1.0 , 1.0, 0.0 },
+        {1.0, 1.0, 1.0 , 1.0, 1.0 },
+    };
+
+    const short indexs[]= {
+        0, 1, 2,
+        2, 1, 3,
+    };
+
+    m_pFVAO->create();
+    m_pFVAO->bind();
+
+    m_pFVBO->create();
+    m_pFVBO->bind();
+    m_pFVBO->setBufferData(vertexs,sizeof(vertexs));
+
+    m_pFEBO->create();
+    m_pFEBO->bind();
+    m_pFEBO->setBufferData(indexs,sizeof(indexs));
+
+    int offset = 0;
+    m_fboShader->setAttributeBuffer(0, GL_FLOAT, (void *)offset, 3, sizeof(PriFloat5));
+    m_fboShader->enableAttributeArray(0);
+
+    offset += 3 * sizeof(float);
+    m_fboShader->setAttributeBuffer(1, GL_FLOAT, (void *)offset, 2, sizeof(PriFloat5));
+    m_fboShader->enableAttributeArray(1);
+
+    m_pFVAO->release();
+    m_pFVBO->release();
+    m_pFEBO->release();
+}
+
+void NdkRender::setupDrawingScreen() {
+    const PriFloat5 vertexs[]  = {
+            {-1.0,-1.0,1.0 , 0.0, 0.0 },
+            {-1.0,1.0, 1.0 , 0.0, 1.0 },
+            {1.0, -1.0,1.0 , 1.0, 0.0 },
+            {1.0, 1.0, 1.0 , 1.0, 1.0 },
+    };
+
+    const short indexs[]= {
+            0, 1, 2,
+            2, 1, 3,
+    };
+
+    m_pVAO->create();
+    m_pVAO->bind();
+
+    m_pVBO->create();
+    m_pVBO->bind();
+    m_pVBO->setBufferData(vertexs,sizeof(vertexs));
+
+    m_pEBO->create();
+    m_pEBO->bind();
+    m_pEBO->setBufferData(indexs,sizeof(indexs));
+
+    int offset = 0;
+    m_pShader->setAttributeBuffer(0,GL_FLOAT, (void *)offset, 3, sizeof(PriFloat5));
+    m_pShader->enableAttributeArray(0);
+
+    offset += 3 * sizeof(float);
+    m_pShader->setAttributeBuffer(1,GL_FLOAT, (void *)offset, 2, sizeof(PriFloat5));
+    m_pShader->enableAttributeArray(1);
+
+    m_pVAO->release();
+    m_pVBO->release();
+    m_pEBO->release();
+}
+
+void NdkRender::drawToFBO() {
+    m_pFBO->bind();
+
+    glViewport(0,0,900,900);
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    m_angle += 0.00f;
+
+    glm::mat4x4  objectMat;
+    glm::mat4x4  objectTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+    glm::mat4x4  objectRotMat = glm::rotate(glm::mat4(1.0f),m_angle,glm::vec3(1.0f, 1.0f, 1.0) );
+    glm::mat4x4  objectScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(1.0f, 1.0f, 1.0f) );
+
+    float aspectRatio = 900.0f / 900.0f;
+    glm::mat4 projMat = glm::perspective(glm::radians(60.0f), aspectRatio, 0.1f, 1000.0f);
+    objectMat = projMat* objectTransMat * objectRotMat * objectScaleMat;
+
+    m_pFVAO->bind();
+    m_fboShader->bind();
+    m_fboShader->setUniformValue("ufbotexture", 0);
+    m_fboShader->setUniformValue("u_mat", objectMat);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_texID[3]);
+    glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,NULL);
+    glBindTexture(GL_TEXTURE_2D,0);
+
+    m_fboShader->release();
+    m_pFVAO->release();
+    m_pFBO->release();
+}
+
+void NdkRender::drawToScreen() {
+    glViewport(0,0,1080,2320);
+    glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    m_angle += 0.00f;
+
+    glm::mat4x4  objectMat;
+    glm::mat4x4  objectTransMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+    glm::mat4x4  objectRotMat = glm::rotate(glm::mat4(1.0f),m_angle,glm::vec3(1.0f, 1.0f, 1.0) );
+    glm::mat4x4  objectScaleMat = glm::scale(glm::mat4(1.0f),glm::vec3(0.5f, 0.5f, 0.5f) );
+
+    glm::mat4 projMat = glm::perspective(glm::radians(60.0f), (float)9/(float)18, 0.1f, 1000.0f);
+    objectMat = projMat* objectTransMat * objectScaleMat* objectRotMat ;
+
+    m_pVAO->bind();
+    m_pShader->bind();
+    m_pShader->setUniformValue("u_mat", objectMat);
+    m_pShader->setUniformValue("utexture", 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_pFBO->getTextureId());
+    glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,NULL);
+    glBindTexture(GL_TEXTURE_2D,0);
+
+    m_pShader->release();
+    m_pVAO->release();
+}
 
 
 // 2.0的使用方式

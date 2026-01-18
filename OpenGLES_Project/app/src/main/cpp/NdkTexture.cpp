@@ -63,7 +63,7 @@ GLuint NdkTexture::createOpenGLTexture(Imageloader *pImgLoader) {
 
     glEnable(GL_TEXTURE_2D);
     glGenTextures(1,&textureID);//生成纹理索引，用来管理图片数据
-    glBindTexture(GL_TEXTURE_2D,textureID);//绑定纹理索引，之后的操作都针对当前纹理索引
+    glBindTexture(GL_TEXTURE_2D,textureID);//绑定纹理索引，之后的操作都针对该纹理索引
 
     //配置参数，告诉GPU当纹理被拉伸、缩小或超出坐标范围时该如何处理
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
@@ -74,6 +74,7 @@ GLuint NdkTexture::createOpenGLTexture(Imageloader *pImgLoader) {
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,
                  pImgLoader->getWidth(),pImgLoader->getHeight(),0,
                  GL_RGBA,GL_UNSIGNED_BYTE,pImgLoader->getData());
+    glBindTexture(GL_TEXTURE_2D, 0); //不加该行，也不会报错
 
     return textureID;
 }

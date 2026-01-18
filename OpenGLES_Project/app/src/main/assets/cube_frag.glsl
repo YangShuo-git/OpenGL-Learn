@@ -2,7 +2,8 @@
 precision mediump float;
 
 uniform sampler2D utexture;
-in vec2 o_uv;
+
+in  vec2 o_uv;
 out vec4 fragColor;
 
 void main(void)
