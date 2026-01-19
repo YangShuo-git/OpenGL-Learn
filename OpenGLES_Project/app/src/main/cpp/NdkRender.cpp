@@ -32,6 +32,8 @@ NdkRender::~NdkRender() {
 }
 
 void NdkRender::init() {
+    LOGI("init");
+
     glClearColor(0.0,0.0,0.0,1.0);
     glClearDepthf(1.0);
     glEnable(GL_DEPTH_TEST);
@@ -100,6 +102,7 @@ void NdkRender::draw() {
 }
 
 void NdkRender::sizeChanged(int w, int h) {
+    LOGI("sizeChanged: %d, %d", w, h);
     glViewport(0,0,w,h);
 
 #if 0

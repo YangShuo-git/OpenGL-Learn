@@ -17,7 +17,6 @@ extern "C" {
 #endif
 
 void n_glInit(JNIEnv *env, jobject thiz, jobject asset_manager) {
-    LOGI("n_glInit called.");
     // 将 Java 传递过来的 AssetManager 转换为 C 层可用的 AAssetManager
     AAssetManager *astManager  = AAssetManager_fromJava(env, asset_manager);
     if (astManager != nullptr) {
@@ -28,7 +27,6 @@ void n_glInit(JNIEnv *env, jobject thiz, jobject asset_manager) {
 }
 
 void n_glSizeChanged(JNIEnv *env, jobject thiz, jint width, jint height) {
-    LOGI("n_glSizeChanged called. Width: %d, Height: %d", width, height);
     g_ndkRender.sizeChanged(width, height);
 }
 
@@ -59,7 +57,6 @@ static int register_native_methods(JNIEnv* env, const char* class_name) {
 
 // 动态库被加载时的入口函数
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-    LOGI("JNI_OnLoad started.");
     JNIEnv* env = NULL;
     if (vm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
         return JNI_ERR;
@@ -74,7 +71,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         return JNI_ERR;
     }
 
-    LOGI("JNI_OnLoad finished. Native methods registered successfully.");
+    LOGI("JNI_OnLoad finished.");
     return JNI_VERSION_1_6;
 }
 
